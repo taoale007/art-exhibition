@@ -1,18 +1,47 @@
+好的主人！我直接将完整代码输出到对话框中：
+
+```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中日联合绘画展览会 | 作品展</title>
+    <title>中日联合绘画展览会 | Sino-Japanese Joint Painting Exhibition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            primary: '#D4AF37',
+                            light: '#F5D76E',
+                            dark: '#B8860B',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         :root {
             --gold-primary: #D4AF37;
             --gold-light: #F5D76E;
             --gold-dark: #B8860B;
-            --crimson: #8B0000;
+        }
+
+        .dark {
+            --bg-primary: #0a0a14;
+            --text-primary: #e5e5e5;
+        }
+
+        .light {
+            --bg-primary: #f5f5f5;
+            --text-primary: #1a1a1a;
         }
 
         * {
@@ -23,9 +52,13 @@
 
         body {
             font-family: 'Noto Sans SC', sans-serif;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark {
             background-color: #0a0a14;
             color: #e5e5e5;
-            overflow-x: hidden;
             background-image: url('bg.jpg');
             background-size: cover;
             background-attachment: fixed;
@@ -33,7 +66,12 @@
             background-repeat: no-repeat;
         }
 
-        body::before {
+        body.light {
+            background-color: #f8f8f8;
+            color: #1a1a1a;
+        }
+
+        body.dark::before {
             content: '';
             position: fixed;
             top: 0;
@@ -44,80 +82,23 @@
             z-index: -1;
         }
 
-        body::after {
+        body.light::before {
             content: '';
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            opacity: 0.03;
-            pointer-events: none;
+            background: rgba(255, 255, 255, 0.5);
             z-index: -1;
         }
 
-        .custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--gold-primary);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
-            transform: translate(-50%, -50%);
-            mix-blend-mode: difference;
-        }
-
-        .custom-cursor.hover-card {
-            transform: translate(-50%, -50%) scale(2);
-            background-color: rgba(212, 175, 55, 0.8);
-            border-color: #ffd700;
-        }
-
-        .light-orb {
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 1;
-            transform: translate(-50%, -50%);
-            transition: opacity 0.3s ease;
-        }
-
-        .spotlight {
-            position: fixed;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.08) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: 1;
-            transform: translate(-50%, -50%);
-        }
-
-        .art-card {
-            transform-style: preserve-3d;
-            transition: transform 0.5s ease, box-shadow 0.5s ease;
-            transform: translateZ(30px);
-        }
-
-        .art-card:hover {
-            transform: translateZ(30px) scale(1.05);
-            box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.4);
-        }
-
-        .art-card-inner {
-            transform: translateZ(30px);
-        }
-
+        /* 粒子上浮效果 */
         .particle {
             position: fixed;
             width: 4px;
             height: 4px;
-            background: radial-gradient(circle, #ffd700, transparent);
+            background: radial-gradient(circle, var(--gold-primary), transparent);
             border-radius: 50%;
             pointer-events: none;
             animation: float-particle 15s infinite ease-in-out;
@@ -130,243 +111,59 @@
                 transform: translateY(100vh) translateX(0) scale(1);
                 opacity: 0;
             }
-            10% {
-                opacity: 0.6;
-            }
-            90% {
-                opacity: 0.6;
-            }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
             100% {
                 transform: translateY(-100vh) translateX(100px) scale(0.5);
                 opacity: 0;
             }
         }
 
-        .fade-in-up {
-            opacity: 0;
-            transform: translateY(60px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
+        /* 展字圆形框 */
+        .exhibition-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #000;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
         }
 
-        .fade-in-up.visible {
-            opacity: 1;
-            transform: translateY(0);
+        .exhibition-badge-small {
+            width: 36px;
+            height: 36px;
+            font-size: 1.1rem;
         }
 
-        .modal {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+        /* 作品卡片 */
+        .art-card {
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
         }
 
-        .modal.active {
-            opacity: 1;
-            visibility: visible;
+        .art-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
         }
 
-        .modal-content {
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .modal.active .modal-content {
-            transform: scale(1);
-        }
-
-        .message-card {
-            background: linear-gradient(135deg, rgba(30, 30, 40, 0.9), rgba(50, 50, 60, 0.9));
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            backdrop-filter: blur(10px);
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #1a1a2e;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, var(--gold-primary), var(--gold-dark));
-            border-radius: 4px;
-        }
-
-        .nav-link {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, var(--gold-primary), var(--gold-light));
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-        }
-
-        .nav-link:hover::after {
-            transform: translateX(0);
-        }
-
+        /* 图片网格 */
         .artwork-grid {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 1rem;
         }
 
-        @media (max-width: 1400px) {
+        @media (max-width: 768px) {
             .artwork-grid {
-                grid-template-columns: repeat(5, 1fr);
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             }
         }
 
-        @media (max-width: 1100px) {
-            .artwork-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media (max-width: 900px) {
-            .artwork-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .artwork-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .nav-search-bar {
-            display: flex;
-            align-items: center;
-            background: rgba(30, 30, 40, 0.8);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 25px;
-            padding: 6px 14px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-search-bar:focus-within {
-            border-color: var(--gold-primary);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
-        }
-
-        .nav-search-bar input {
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
-            width: 140px;
-            font-size: 13px;
-        }
-
-        .nav-search-bar input::placeholder {
-            color: #888;
-        }
-
-        .search-results {
-            position: fixed;
-            top: 65px;
-            right: 20px;
-            z-index: 100;
-            background: rgba(20, 20, 30, 0.98);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(212, 175, 55, 0.4);
-            border-radius: 16px;
-            min-width: 320px;
-            max-width: 400px;
-            max-height: 450px;
-            overflow-y: auto;
-            display: none;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        .search-results.active {
-            display: block;
-        }
-
-        .search-result-item {
-            padding: 14px 18px;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        .search-result-item:hover {
-            background: rgba(212, 175, 55, 0.15);
-        }
-
-        .back-to-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 50;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        }
-
-        .back-to-top.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .section-title {
-            position: relative;
-            display: inline-block;
-            padding-bottom: 10px;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--gold-primary), transparent);
-        }
-
-        .country-title {
-            font-size: 1.4rem;
-            font-weight: 300;
-            letter-spacing: 0.3em;
-            color: var(--gold-primary);
-            margin-bottom: 1.5rem;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-        }
-
-        .country-title::before {
-            content: '◆';
-            margin-right: 0.5rem;
-            font-size: 0.7rem;
-        }
-
-        .intro-card {
-            background: linear-gradient(135deg, rgba(30, 30, 45, 0.9), rgba(40, 40, 55, 0.85));
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        }
-
+        /* 时间轴 */
         .exhibition-timeline {
             position: relative;
             padding-left: 30px;
@@ -404,33 +201,70 @@
             border-radius: 50%;
         }
 
-        .exhibition-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: var(--gold-primary);
+        /* 模态框 */
+        .modal {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
 
-        /* 主要参展人物样式 */
-        .participants-section {
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(212, 175, 55, 0.3);
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
         }
 
-        .participants-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
+        .modal-content {
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            max-width: 95vw;
+            max-height: 95vh;
         }
 
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--gold-primary), var(--gold-dark));
+            border-radius: 4px;
+        }
+
+        /* 折叠面板 */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+
+        .accordion-content.active {
+            max-height: 10000px;
+            transition: max-height 1s ease-in;
+        }
+
+        /* 参展人物卡片 */
         .participant-card {
-            background: linear-gradient(135deg, rgba(30, 30, 45, 0.9), rgba(40, 40, 55, 0.85));
             border: 1px solid rgba(212, 175, 55, 0.3);
             border-radius: 12px;
-            padding: 1.25rem;
+            padding: 1rem;
             text-align: center;
             transition: all 0.3s ease;
+        }
+
+        body.dark .participant-card {
+            background: linear-gradient(135deg, rgba(30, 30, 45, 0.9), rgba(40, 40, 55, 0.85));
+        }
+
+        body.light .participant-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(245, 245, 245, 0.85));
         }
 
         .participant-card:hover {
@@ -439,77 +273,166 @@
             box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
         }
 
-        .participant-name {
-            font-size: 1.1rem;
-            font-weight: 600;
+        /* 返回顶部 */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 50;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 淡入动画 */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 主题切换按钮 */
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: rgba(30, 30, 40, 0.8);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: var(--gold-primary);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        body.light .theme-toggle::before {
+            transform: translateX(30px);
+        }
+
+        /* 图片画廊 */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            cursor: pointer;
+            aspect-ratio: 4/3;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* 社交媒体链接 */
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
             color: var(--gold-primary);
-            font-family: 'Noto Serif SC', serif;
+            transition: all 0.3s ease;
         }
 
-        .participant-role {
-            font-size: 0.85rem;
-            color: #999;
-            margin-top: 0.5rem;
+        .social-links a:hover {
+            background: var(--gold-primary);
+            color: #000;
+            transform: translateY(-3px);
         }
 
-        @media (max-width: 768px) {
-            .custom-cursor, .light-orb, .spotlight {
-                display: none;
-            }
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--gold-primary);
+            margin: 0.25rem;
+        }
 
-            .nav-search-bar input {
-                width: 80px;
-            }
+        /* 信息卡片 */
+        .info-card {
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
 
-            .country-title {
-                font-size: 1.2rem;
-                letter-spacing: 0.2em;
-            }
+        body.dark .info-card {
+            background: linear-gradient(135deg, rgba(30, 30, 45, 0.9), rgba(40, 40, 55, 0.85));
+        }
 
-            .participants-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
+        body.light .info-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(245, 245, 245, 0.9));
         }
     </style>
 </head>
-<body>
-    <!-- 自定义光标 -->
-    <div class="custom-cursor"></div>
-    
-    <!-- 光影效果 -->
-    <div class="light-orb"></div>
-    <div class="spotlight"></div>
-    <div class="spotlight"></div>
-    <div class="spotlight"></div>
-
+<body class="dark">
     <!-- 导航栏 -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
-                    <span class="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-yellow-400 bg-clip-text text-transparent">展</span>
-                    <span class="ml-3 text-lg font-semibold text-white/90">中日联合绘画展览会</span>
+                    <span class="exhibition-badge exhibition-badge-small">展</span>
+                    <span class="ml-3 text-lg font-semibold text-white/90" style="font-family: 'Noto Serif SC', serif;">中日联合绘画展览会</span>
                 </div>
                 <div class="hidden md:flex items-center space-x-6">
-                    <a href="#intro" class="nav-link text-white/80 hover:text-white transition-colors pb-1">展览介绍</a>
-                    <a href="#chen" class="nav-link text-white/80 hover:text-white transition-colors pb-1">陈师曾介绍</a>
-                    <a href="#chen-works" class="nav-link text-white/80 hover:text-white transition-colors pb-1">陈师曾作品</a>
-                    <a href="#exhibition1" class="nav-link text-white/80 hover:text-white transition-colors pb-1">第一回</a>
-                    <a href="#exhibition2" class="nav-link text-white/80 hover:text-white transition-colors pb-1">第二回</a>
-                    <a href="#exhibition3" class="nav-link text-white/80 hover:text-white transition-colors pb-1">第三回</a>
-                    <a href="#exhibition4" class="nav-link text-white/80 hover:text-white transition-colors pb-1">第四回</a>
-                    <a href="#messages" class="nav-link text-white/80 hover:text-white transition-colors pb-1">留言</a>
-                    <div class="nav-search-bar">
-                        <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                        <input type="text" id="searchInput" placeholder="搜索作品..." class="text-white">
-                    </div>
+                    <a href="#intro" class="text-white/80 hover:text-white transition-colors pb-1 border-b-2 border-transparent hover:border-yellow-600">展览简介</a>
+                    <a href="#exhibition1" class="text-white/80 hover:text-white transition-colors pb-1 border-b-2 border-transparent hover:border-yellow-600">第一回联展</a>
+                    <a href="#exhibition2" class="text-white/80 hover:text-white transition-colors pb-1 border-b-2 border-transparent hover:border-yellow-600">第二回联展</a>
+                    <a href="#exhibition3" class="text-white/80 hover:text-white transition-colors pb-1 border-b-2 border-transparent hover:border-yellow-600">第三回联展</a>
+                    <a href="#exhibition4" class="text-white/80 hover:text-white transition-colors pb-1 border-b-2 border-transparent hover:border-yellow-600">第四回联展</a>
+                    <a href="#chen" class="text-white/80 hover:text-white transition-colors pb-1 border-b-2 border-transparent hover:border-yellow-600">陈师曾参展作品</a>
+                    <div class="theme-toggle" onclick="toggleTheme()" title="切换深色/浅色模式"></div>
                 </div>
                 <button id="mobileMenuBtn" class="md:hidden text-white p-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
+                    <i class="fas fa-bars text-xl"></i>
                 </button>
             </div>
         </div>
@@ -521,186 +444,267 @@
             <button id="closeMobileMenu" class="text-white text-3xl">&times;</button>
         </div>
         <div class="flex flex-col items-center space-y-6 pt-10">
-            <a href="#intro" class="text-white text-xl mobile-menu-link">展览介绍</a>
-            <a href="#chen" class="text-white text-xl mobile-menu-link">陈师曾介绍</a>
-            <a href="#chen-works" class="text-white text-xl mobile-menu-link">陈师曾作品</a>
-            <a href="#exhibition1" class="text-white text-xl mobile-menu-link">第一回</a>
-            <a href="#exhibition2" class="text-white text-xl mobile-menu-link">第二回</a>
-            <a href="#exhibition3" class="text-white text-xl mobile-menu-link">第三回</a>
-            <a href="#exhibition4" class="text-white text-xl mobile-menu-link">第四回</a>
-            <a href="#messages" class="text-white text-xl mobile-menu-link">留言</a>
+            <a href="#intro" class="text-white text-xl mobile-menu-link">展览简介</a>
+            <a href="#exhibition1" class="text-white text-xl mobile-menu-link">第一回联展</a>
+            <a href="#exhibition2" class="text-white text-xl mobile-menu-link">第二回联展</a>
+            <a href="#exhibition3" class="text-white text-xl mobile-menu-link">第三回联展</a>
+            <a href="#exhibition4" class="text-white text-xl mobile-menu-link">第四回联展</a>
+            <a href="#chen" class="text-white text-xl mobile-menu-link">陈师曾参展作品</a>
+            <div class="theme-toggle mt-4" onclick="toggleTheme()" title="切换深色/浅色模式"></div>
         </div>
     </div>
-
-    <!-- 搜索结果 -->
-    <div id="searchResults" class="search-results"></div>
 
     <!-- Hero区域 -->
     <section class="min-h-screen flex items-center justify-center relative overflow-hidden">
         <div class="text-center z-10 px-4">
-            <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 bg-clip-text text-transparent" style="font-family: 'Noto Serif SC', serif;">
+            <div class="flex items-center justify-center mb-6">
+                <span class="exhibition-badge text-2xl">展</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 bg-clip-text text-transparent" style="font-family: 'Noto Serif SC', serif;">
                 中日联合绘画展览会
             </h1>
-            <p class="text-xl md:text-2xl text-white/80 mb-4">作品展</p>
-            <p class="text-lg text-white/60 mb-8 max-w-2xl mx-auto">
+            <p class="text-lg md:text-xl text-white/60 mb-2">Sino-Japanese Joint Painting Exhibition</p>
+            <p class="text-lg md:text-xl text-white/80 mb-8 max-w-2xl mx-auto">
                 汇聚中日两国艺术精华，展现东方绘画之美
             </p>
             <a href="#intro" class="inline-block px-8 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 text-white rounded-full hover:from-yellow-700 hover:to-yellow-800 transition-all transform hover:scale-105 shadow-lg">
-                开始欣赏
+                <i class="fas fa-arrow-down mr-2"></i>开始欣赏
             </a>
         </div>
         
-        <!-- 滚动提示 -->
         <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <svg class="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-            </svg>
+            <i class="fas fa-chevron-down text-white/50 text-2xl"></i>
         </div>
     </section>
 
-    <!-- 展览介绍 -->
+    <!-- 展览简介 -->
     <section id="intro" class="py-20 px-4">
         <div class="max-w-6xl mx-auto">
-            <div class="intro-card p-8 md:p-12 fade-in-up">
-                <h2 class="section-title text-3xl md:text-4xl font-bold mb-8 text-white" style="font-family: 'Noto Serif SC', serif;">
+            <div class="info-card p-8 md:p-12 fade-in-up">
+                <h2 class="text-3xl md:text-4xl font-bold mb-8 text-white flex items-center" style="font-family: 'Noto Serif SC', serif;">
+                    <span class="exhibition-badge exhibition-badge-small mr-3">展</span>
                     中日联合绘画展览会简介
                 </h2>
-                <div class="text-white/80 leading-relaxed text-base md:text-lg space-y-4">
-                    <p>
-                        "中日联合绘画展览会"是二十世纪上半叶东亚最具规模的跨国美术交流平台，为面临西方冲击的中日传统绘画提供了关键对话空间。该系列展览由日本画家渡边晨亩等人发起，于1920年，由金城、陈师曾等人创立的"中国画学研究会"与日本画家渡边晨亩、荒木十亩等共同策划。
-                    </p>
-                    <p>
-                        从1921年至1931年，双方在北京和东京轮流举办了六次大规模的"中日联合绘画展览会"。值得注意的是，第五回与第六回分别更名为"中日现代绘画展览会"又称"唐宋元明名画展览会"、"中日古今绘画展览会"又称"宋元明清名画展览会"。
-                    </p>
+                
+                <div class="text-white/80 leading-relaxed text-base md:text-lg space-y-4 mb-8">
+                    <p>"中日联合绘画展览会"（下称"中日联展"）是二十世纪上半叶东亚最具规模的跨国美术交流平台，为面临西方冲击的中日传统绘画提供了关键对话空间。</p>
+                    <p>该系列展览由日本画家渡边晨亩等人发起，于1920年，由金城、陈师曾等人创立的"中国画学研究会"与日本画家渡边晨亩、荒木十亩等共同策划。从1921年至1931年，双方在北京和东京轮流举办了六次大规模的"中日联合绘画展览会"。</p>
+                    <p>值得注意的是，第五回与第六回分别更名为"中日现代绘画展览会"——唐宋元明名画展览会、"中日古今绘画展览会"——宋元明清名画展览会。展览汇集了当时中日两国画坛的顶尖力量，吸引了数以万计的观众，成为当时极具影响力的文化盛事。</p>
+                </div>
+
+                <!-- 联展相关图片 -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold text-yellow-600 mb-4"><i class="fas fa-images mr-2"></i>展览影像</h3>
+                    <div class="gallery-grid">
+                        <div class="gallery-item" onclick="openImageModal('联展相关图片/展览照片1：第一回联展合影.png', '第一回联展合影')">
+                            <img src="联展相关图片/展览照片1：第一回联展合影.png" alt="第一回联展合影" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%231a1a2e%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23D4AF37%22 font-size=%2216%22 x=%22200%22 y=%22150%22 text-anchor=%22middle%22%3E第一回联展合影%3C/text%3E%3C/svg%3E'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4"><span class="text-white text-sm">第一回联展合影</span></div>
+                        </div>
+                        <div class="gallery-item" onclick="openImageModal('联展相关图片/展览照片2：第一回联展会场-第一室.png', '第一回联展会场')">
+                            <img src="联展相关图片/展览照片2：第一回联展会场-第一室.png" alt="第一回联展会场" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%231a1a2e%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23D4AF37%22 font-size=%2216%22 x=%22200%22 y=%22150%22 text-anchor=%22middle%22%3E第一回联展会场%3C/text%3E%3C/svg%3E'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4"><span class="text-white text-sm">第一回联展会场-第一室</span></div>
+                        </div>
+                        <div class="gallery-item" onclick="openImageModal('联展相关图片/展览照片6：第二回联展-东京1922.png', '第二回联展')">
+                            <img src="联展相关图片/展览照片6：第二回联展-东京1922.png" alt="第二回联展" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%231a1a2e%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23D4AF37%22 font-size=%2216%22 x=%22200%22 y=%22150%22 text-anchor=%22middle%22%3E第二回联展%3C/text%3E%3C/svg%3E'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4"><span class="text-white text-sm">第二回联展-东京1922</span></div>
+                        </div>
+                        <div class="gallery-item" onclick="openImageModal('联展相关图片/展览照片8：第五回联展-上海1929.png', '第五回联展')">
+                            <img src="联展相关图片/展览照片8：第五回联展-上海1929.png" alt="第五回联展" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%231a1a2e%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23D4AF37%22 font-size=%2216%22 x=%22200%22 y=%22150%22 text-anchor=%22middle%22%3E第五回联展%3C/text%3E%3C/svg%3E'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4"><span class="text-white text-sm">第五回联展-上海1929</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 展览详情时间轴 -->
+                <h3 class="text-xl font-bold text-yellow-600 mb-6"><i class="fas fa-history mr-2"></i>中日联展详情</h3>
+                
+                <div class="exhibition-timeline space-y-6">
+                    <!-- 第一回 -->
+                    <div class="exhibition-item">
+                        <div class="text-yellow-600 font-bold text-lg">第一回</div>
+                        <div class="text-white/60 text-sm mb-2"><i class="far fa-calendar mr-2"></i>大正十年（1921.11-12）</div>
+                        <div class="text-white/60 text-sm mb-2"><i class="fas fa-map-marker-alt mr-2"></i>北京、天津</div>
+                        <div class="mt-2">
+                            <span class="tag">中方：金绍城、陈衡恪、吴昌硕、周肇祥、颜世清、王一亭</span>
+                            <span class="tag">名誉赞助：徐世昌、黎元洪、陈宝琛</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="tag">日方：渡边晨亩、荒木十亩、川合玉堂、小室翠云、竹内栖凤</span>
+                            <span class="tag">赞助人：德川赖伦、涩泽荣一</span>
+                        </div>
+                    </div>
+
+                    <!-- 第二回 -->
+                    <div class="exhibition-item">
+                        <div class="text-yellow-600 font-bold text-lg">第二回</div>
+                        <div class="text-white/60 text-sm mb-2"><i class="far fa-calendar mr-2"></i>大正十一年（1922.5）</div>
+                        <div class="text-white/60 text-sm mb-2"><i class="fas fa-map-marker-alt mr-2"></i>东京（东京府厅工艺馆）</div>
+                        <div class="mt-2">
+                            <span class="tag">中方：金城、陈师曾、吴昌硕、齐白石、梅兰芳</span>
+                            <span class="tag">赴日代表：金域、陈师曾、吴熙曾</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="tag">日方：渡边晨亩、荒木十亩、川合玉堂、小堀鞆音、小室翠云</span>
+                            <span class="tag">资金支持：日华实业协会</span>
+                        </div>
+                    </div>
+
+                    <!-- 第三回 -->
+                    <div class="exhibition-item">
+                        <div class="text-yellow-600 font-bold text-lg">第三回</div>
+                        <div class="text-white/60 text-sm mb-2"><i class="far fa-calendar mr-2"></i>大正十三年（1924.4-5）</div>
+                        <div class="text-white/60 text-sm mb-2"><i class="fas fa-map-marker-alt mr-2"></i>北京、上海</div>
+                        <div class="mt-2">
+                            <span class="tag">中方：金城、周肇祥、吴昌硕、陶鎏泉、萧愻</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="tag">日方：渡边晨亩、荒木十亩、小室翠云、竹内栖凤、山元春举</span>
+                            <span class="tag">日本外务省支持</span>
+                        </div>
+                    </div>
+
+                    <!-- 第四回 -->
+                    <div class="exhibition-item">
+                        <div class="text-yellow-600 font-bold text-lg">第四回</div>
+                        <div class="text-white/60 text-sm mb-2"><i class="far fa-calendar mr-2"></i>大正十五年（1926.6-7）</div>
+                        <div class="text-white/60 text-sm mb-2"><i class="fas fa-map-marker-alt mr-2"></i>东京、大阪</div>
+                        <div class="mt-2">
+                            <span class="tag">中方：金城、金潜庵、周肇祥、惠孝同、钱瘦铁</span>
+                            <span class="tag">名誉会长：徐世昌</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="tag">日方：渡边晨亩、荒木十亩等核心成员</span>
+                            <span class="tag">日本外务省支持</span>
+                        </div>
+                    </div>
+
+                    <!-- 第五回 -->
+                    <div class="exhibition-item">
+                        <div class="text-yellow-600 font-bold text-lg">第五回</div>
+                        <div class="text-white/50 text-sm mb-1">更名："中日现代绘画展览会"又名"唐宋元明名画展览会"</div>
+                        <div class="text-white/60 text-sm mb-2"><i class="far fa-calendar mr-2"></i>昭和四年（1929.11-12）</div>
+                        <div class="text-white/60 text-sm mb-2"><i class="fas fa-map-marker-alt mr-2"></i>上海、大连、奉天</div>
+                        <div class="mt-2">
+                            <span class="tag">中方借展：溥仪、陈宝琛、罗振玉、张学良</span>
+                            <span class="tag">蒋介石援助</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="tag">日方借展：荒木十亩、川合玉堂、中村不折、德川家达</span>
+                        </div>
+                    </div>
+
+                    <!-- 第六回 -->
+                    <div class="exhibition-item">
+                        <div class="text-yellow-600 font-bold text-lg">第六回</div>
+                        <div class="text-white/50 text-sm mb-1">更名："中日古今绘画展览会"又名"宋元明清名画展览会"</div>
+                        <div class="text-white/60 text-sm mb-2"><i class="far fa-calendar mr-2"></i>昭和六年（1931.4-5）</div>
+                        <div class="text-white/60 text-sm mb-2"><i class="fas fa-map-marker-alt mr-2"></i>东京（东京上野公园帝室博物馆）</div>
+                        <div class="mt-2">
+                            <span class="tag">中方借展：徐世昌、叶恭绰、王一亭、陈宝琛、张学良、罗振玉</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="tag">日方借展：渡边晨亩、喜多冰太、住友宽一、狩野直喜、内藤湖南</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 主要参展人物 -->
-                <div class="participants-section">
-                    <h3 class="text-2xl font-bold text-white mb-2" style="font-family: 'Noto Serif SC', serif;">
-                        主要参展人物
-                    </h3>
+                <div class="mt-12 pt-8 border-t border-white/10">
+                    <h3 class="text-xl font-bold text-yellow-600 mb-6"><i class="fas fa-users mr-2"></i>主要参展人物</h3>
                     <p class="text-white/60 text-sm mb-4">文化先驱 · 推动中日艺术交流</p>
-                    <div class="participants-grid">
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <!-- 中国画家在前 -->
                         <div class="participant-card">
-                            <div class="participant-name">陈半丁</div>
-                            <div class="participant-role">国画大家</div>
+                            <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                <img src="主要参展人物/陈半丁.png" alt="陈半丁" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-user text-2xl text-yellow-600\'></i>'">
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">陈半丁</div>
+                            <div class="text-xs text-white/50">中国</div>
                         </div>
                         <div class="participant-card">
-                            <div class="participant-name">陈师曾</div>
-                            <div class="participant-role">中国画学研究会核心</div>
+                            <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                <img src="主要参展人物/陈师曾.png" alt="陈师曾" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-user text-2xl text-yellow-600\'></i>'">
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">陈师曾</div>
+                            <div class="text-xs text-white/50">中国</div>
                         </div>
                         <div class="participant-card">
-                            <div class="participant-name">大村西崖</div>
-                            <div class="participant-role">日本美术史家</div>
+                            <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                <img src="主要参展人物/金城.png" alt="金城" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-user text-2xl text-yellow-600\'></i>'">
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">金城</div>
+                            <div class="text-xs text-white/50">中国</div>
                         </div>
                         <div class="participant-card">
-                            <div class="participant-name">福冈铁斋</div>
-                            <div class="participant-role">日本南画大师</div>
+                            <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                <img src="主要参展人物/齐白石.png" alt="齐白石" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-user text-2xl text-yellow-600\'></i>'">
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">齐白石</div>
+                            <div class="text-xs text-white/50">中国</div>
                         </div>
                         <div class="participant-card">
-                            <div class="participant-name">贺履之</div>
-                            <div class="participant-role">国画家</div>
+                            <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                <img src="主要参展人物/吴昌硕.png" alt="吴昌硕" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-user text-2xl text-yellow-600\'></i>'">
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">吴昌硕</div>
+                            <div class="text-xs text-white/50">中国</div>
                         </div>
                         <div class="participant-card">
-                            <div class="participant-name">胡佩衡</div>
-                            <div class="participant-role">山水画家</div>
+                            <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                <img src="主要参展人物/周肇祥.png" alt="周肇祥" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-user text-2xl text-yellow-600\'></i>'">
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">周肇祥</div>
+                            <div class="text-xs text-white/50">中国</div>
+                        </div>
+                        <!-- 日本画家在后 -->
+                        <div class="participant-card">
+                            <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                <img src="主要参展人物/渡边晨亩.png" alt="渡边晨亩" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-user text-2xl text-yellow-600\'></i>'">
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">渡边晨亩</div>
+                            <div class="text-xs text-white/50">日本</div>
                         </div>
                         <div class="participant-card">
-                            <div class="participant-name">荒木十畝</div>
-                            <div class="participant-role">日本画家</div>
+                            <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                <img src="主要参展人物/荒木十畝.png" alt="荒木十畝" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-user text-2xl text-yellow-600\'></i>'">
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">荒木十畝</div>
+                            <div class="text-xs text-white/50">日本</div>
                         </div>
                         <div class="participant-card">
-                            <div class="participant-name">金城</div>
-                            <div class="participant-role">中国画学研究会创始人</div>
+                            <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                <img src="主要参展人物/竹内栖凤.png" alt="竹内栖凤" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-user text-2xl text-yellow-600\'></i>'">
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">竹内栖凤</div>
+                            <div class="text-xs text-white/50">日本</div>
                         </div>
                         <div class="participant-card">
-                            <div class="participant-name">金开藩</div>
-                            <div class="participant-role">画家</div>
+                            <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                <i class="fas fa-user text-2xl text-yellow-600"></i>
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">小室翠云</div>
+                            <div class="text-xs text-white/50">日本="fas fa-user text-2xl text-yellow-600"></i>
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">小室翠云</div>
+                            <div class="text-xs text-white/50">日本</div>
                         </div>
                         <div class="participant-card">
-                            <div class="participant-name">内藤湖南</div>
-                            <div class="participant-role">日本汉学家</div>
+                            <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                <i class="fas fa-user text-2xl text-yellow-600"></i>
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">川合玉堂</div>
+                            <div class="text-xs text-white/50">日本</div>
                         </div>
                         <div class="participant-card">
-                            <div class="participant-name">齐白石</div>
-                            <div class="participant-role">画坛巨匠</div>
-                        </div>
-                        <div class="participant-card">
-                            <div class="participant-name">秦仲文</div>
-                            <div class="participant-role">山水画家</div>
-                        </div>
-                        <div class="participant-card">
-                            <div class="participant-name">吴熙曾</div>
-                            <div class="participant-role">国画家</div>
-                        </div>
-                        <div class="participant-card">
-                            <div class="participant-name">徐世昌</div>
-                            <div class="participant-role">书画家</div>
-                        </div>
-                        <div class="participant-card">
-                            <div class="participant-name">姚华</div>
-                            <div class="participant-role">书画家</div>
-                        </div>
-                        <div class="participant-card">
-                            <div class="participant-name">周肇祥</div>
-                            <div class="participant-role">画学研究会核心</div>
-                        </div>
-                        <div class="participant-card">
-                            <div class="participant-name">竹内栖凤</div>
-                            <div class="participant-role">日本画坛巨匠</div>
+                            <div class="w-16 h-16 mx-auto mb-2 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
+                                <i class="fas fa-user text-2xl text-yellow-600"></i>
+                            </div>
+                            <div class="font-bold text-yellow-600 text-sm">大村西崖</div>
+                            <div class="text-xs text-white/50">日本</div>
                         </div>
                     </div>
                 </div>
-
-                <!-- 展览时间轴 -->
-                <div class="mt-10">
-                    <div class="exhibition-timeline">
-                        <div class="exhibition-item">
-                            <div class="exhibition-title">第一回中日联合绘画展览会</div>
-                            <div class="text-white/60 text-sm mt-1">大正十年（1921.11-12） | 北京、天津</div>
-                        </div>
-                        <div class="exhibition-item">
-                            <div class="exhibition-title">第二回中日联合绘画展览会</div>
-                            <div class="text-white/60 text-sm mt-1">大正十一年（1922.5） | 东京</div>
-                        </div>
-                        <div class="exhibition-item">
-                            <div class="exhibition-title">第三回中日联合绘画展览会</div>
-                            <div class="text-white/60 text-sm mt-1">大正十三年（1924.4-5） | 北京、上海</div>
-                        </div>
-                        <div class="exhibition-item">
-                            <div class="exhibition-title">第四回中日联合绘画展览会</div>
-                            <div class="text-white/60 text-sm mt-1">大正十五年（1926.6-7） | 东京、大阪</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 陈师曾介绍 -->
-    <section id="chen" class="py-20 px-4">
-        <div class="max-w-6xl mx-auto">
-            <div class="intro-card p-8 md:p-12 fade-in-up">
-                <h2 class="section-title text-3xl md:text-4xl font-bold mb-8 text-white" style="font-family: 'Noto Serif SC', serif;">
-                    陈师曾介绍
-                </h2>
-                <div class="text-white/80 leading-relaxed text-base md:text-lg">
-                    <p>
-                        作为该展览的核心组织者及"中国画学研究会"的灵魂人物，陈师曾兼具"传统艺术捍卫者"与"文化转译者"的双重身份：他一方面致力于捍卫文人画价值，回击"中国画衰落论"；另一方面凭借开阔的国际视野发掘新锐画家。其中最典型的贡献便是在1922年第二届展览中，力荐并携齐白石作品赴日参展，助其一举成名，不仅彻底改变了齐白石的命运，更深刻影响了中国现代美术史的走向。
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 陈师曾作品 -->
-    <section id="chen-works" class="py-20 px-4">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="section-title text-3xl md:text-4xl font-bold mb-12 text-white fade-in-up" style="font-family: 'Noto Serif SC', serif;">
-                陈师曾作品
-            </h2>
-            <div id="chen-works-grid" class="artwork-grid fade-in-up">
-                <!-- 作品将通过JavaScript动态加载 -->
             </div>
         </div>
     </section>
@@ -708,19 +712,29 @@
     <!-- 第一回联展 -->
     <section id="exhibition1" class="py-20 px-4">
         <div class="max-w-7xl mx-auto">
-            <h2 class="section-title text-3xl md:text-4xl font-bold mb-4 text-white fade-in-up" style="font-family: 'Noto Serif SC', serif;">
-                第一回联展
-            </h2>
-            <p class="text-white/60 mb-12 fade-in-up">大正十年（1921.11-12） | 北京、天津</p>
-            
-            <h3 class="country-title fade-in-up">中国</h3>
-            <div id="exhibition1-china-grid" class="artwork-grid fade-in-up mb-12">
-                <!-- 作品将通过JavaScript动态加载 -->
-            </div>
-            
-            <h3 class="country-title fade-in-up">日本</h3>
-            <div id="exhibition1-japan-grid" class="artwork-grid fade-in-up">
-                <!-- 作品将通过JavaScript动态加载 -->
+            <div class="info-card p-8 md:p-12 fade-in-up">
+                <div class="flex items-center justify-between mb-6 cursor-pointer" onclick="toggleAccordion('ex1-content')">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white flex items-center" style="font-family: 'Noto Serif SC', serif;">
+                        <span class="exhibition-badge exhibition-badge-small mr-3">展</span>
+                        第一回联展
+                    </h2>
+                    <i class="fas fa-chevron-down text-yellow-600 text-xl transition-transform duration-300" id="ex1-icon"></i>
+                </div>
+                <p class="text-white/60 mb-6">
+                    <i class="far fa-calendar mr-2"></i>大正十年（1921.11-12） | 
+                    <i class="fas fa-map-marker-alt mr-2 ml-2"></i>北京、天津
+                </p>
+                
+                <div id="ex1-content" class="accordion-content">
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-yellow-600 mb-4 flex items-center"><i class="fas fa-flag mr-2"></i>中国出品</h3>
+                        <div id="ex1-china-grid" class="artwork-grid"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-yellow-600 mb-4 flex items-center"><i class="fas fa-flag mr-2"></i>日本出品</h3>
+                        <div id="ex1-japan-grid" class="artwork-grid"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -728,19 +742,29 @@
     <!-- 第二回联展 -->
     <section id="exhibition2" class="py-20 px-4">
         <div class="max-w-7xl mx-auto">
-            <h2 class="section-title text-3xl md:text-4xl font-bold mb-4 text-white fade-in-up" style="font-family: 'Noto Serif SC', serif;">
-                第二回联展
-            </h2>
-            <p class="text-white/60 mb-12 fade-in-up">大正十一年（1922.5） | 东京</p>
-            
-            <h3 class="country-title fade-in-up">中国</h3>
-            <div id="exhibition2-china-grid" class="artwork-grid fade-in-up mb-12">
-                <!-- 作品将通过JavaScript动态加载 -->
-            </div>
-            
-            <h3 class="country-title fade-in-up">日本</h3>
-            <div id="exhibition2-japan-grid" class="artwork-grid fade-in-up">
-                <!-- 作品将通过JavaScript动态加载 -->
+            <div class="info-card p-8 md:p-12 fade-in-up">
+                <div class="flex items-center justify-between mb-6 cursor-pointer" onclick="toggleAccordion('ex2-content')">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white flex items-center" style="font-family: 'Noto Serif SC', serif;">
+                        <span class="exhibition-badge exhibition-badge-small mr-3">展</span>
+                        第二回联展
+                    </h2>
+                    <i class="fas fa-chevron-down text-yellow-600 text-xl transition-transform duration-300" id="ex2-icon"></i>
+                </div>
+                <p class="text-white/60 mb-6">
+                    <i class="far fa-calendar mr-2"></i>大正十一年（1922.5） | 
+                    <i class="fas fa-map-marker-alt mr-2 ml-2"></i>东京
+                </p>
+                
+                <div id="ex2-content" class="accordion-content">
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-yellow-600 mb-4 flex items-center"><i class="fas fa-flag mr-2"></i>中国出品</h3>
+                        <div id="ex2-china-grid" class="artwork-grid"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-yellow-600 mb-4 flex items-center"><i class="fas fa-flag mr-2"></i>日本出品</h3>
+                        <div id="ex2-japan-grid" class="artwork-grid"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -748,19 +772,29 @@
     <!-- 第三回联展 -->
     <section id="exhibition3" class="py-20 px-4">
         <div class="max-w-7xl mx-auto">
-            <h2 class="section-title text-3xl md:text-4xl font-bold mb-4 text-white fade-in-up" style="font-family: 'Noto Serif SC', serif;">
-                第三回联展
-            </h2>
-            <p class="text-white/60 mb-12 fade-in-up">大正十三年（1924.4-5） | 北京、上海</p>
-            
-            <h3 class="country-title fade-in-up">中国</h3>
-            <div id="exhibition3-china-grid" class="artwork-grid fade-in-up mb-12">
-                <!-- 作品将通过JavaScript动态加载 -->
-            </div>
-            
-            <h3 class="country-title fade-in-up">日本</h3>
-            <div id="exhibition3-japan-grid" class="artwork-grid fade-in-up">
-                <!-- 作品将通过JavaScript动态加载 -->
+            <div class="info-card p-8 md:p-12 fade-in-up">
+                <div class="flex items-center justify-between mb-6 cursor-pointer" onclick="toggleAccordion('ex3-content')">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white flex items-center" style="font-family: 'Noto Serif SC', serif;">
+                        <span class="exhibition-badge exhibition-badge-small mr-3">展</span>
+                        第三回联展
+                    </h2>
+                    <i class="fas fa-chevron-down text-yellow-600 text-xl transition-transform duration-300" id="ex3-icon"></i>
+                </div>
+                <p class="text-white/60 mb-6">
+                    <i class="far fa-calendar mr-2"></i>大正十三年（1924.4-5） | 
+                    <i class="fas fa-map-marker-alt mr-2 ml-2"></i>北京、上海
+                </p>
+                
+                <div id="ex3-content" class="accordion-content">
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-yellow-600 mb-4 flex items-center"><i class="fas fa-flag mr-2"></i>中国出品</h3>
+                        <div id="ex3-china-grid" class="artwork-grid"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-yellow-600 mb-4 flex items-center"><i class="fas fa-flag mr-2"></i>日本出品</h3>
+                        <div id="ex3-japan-grid" class="artwork-grid"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -768,429 +802,405 @@
     <!-- 第四回联展 -->
     <section id="exhibition4" class="py-20 px-4">
         <div class="max-w-7xl mx-auto">
-            <h2 class="section-title text-3xl md:text-4xl font-bold mb-4 text-white fade-in-up" style="font-family: 'Noto Serif SC', serif;">
-                第四回联展
-            </h2>
-            <p class="text-white/60 mb-12 fade-in-up">大正十五年（1926.6-7） | 东京、大阪</p>
-            
-            <h3 class="country-title fade-in-up">中国</h3>
-            <div id="exhibition4-china-grid" class="artwork-grid fade-in-up mb-12">
-                <!-- 作品将通过JavaScript动态加载 -->
-            </div>
-            
-            <h3 class="country-title fade-in-up">日本</h3>
-            <div id="exhibition4-japan-grid" class="artwork-grid fade-in-up">
-                <!-- 作品将通过JavaScript动态加载 -->
+            <div class="info-card p-8 md:p-12 fade-in-up">
+                <div class="flex items-center justify-between mb-6 cursor-pointer" onclick="toggleAccordion('ex4-content')">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white flex items-center" style="font-family: 'Noto Serif SC', serif;">
+                        <span class="exhibition-badge exhibition-badge-small mr-3">展</span>
+                        第四回联展
+                    </h2>
+                    <i class="fas fa-chevron-down text-yellow-600 text-xl transition-transform duration-300" id="ex4-icon"></i>
+                </div>
+                <p class="text-white/60 mb-6">
+                    <i class="far fa-calendar mr-2"></i>大正十五年（1926.6-7） | 
+                    <i class="fas fa-map-marker-alt mr-2 ml-2"></i>东京、大阪
+                </p>
+                
+                <div id="ex4-content" class="accordion-content">
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-yellow-600 mb-4 flex items-center"><i class="fas fa-flag mr-2"></i>中国出品</h3>
+                        <div id="ex4-china-grid" class="artwork-grid"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-yellow-600 mb-4 flex items-center"><i class="fas fa-flag mr-2"></i>日本出品</h3>
+                        <div id="ex4-japan-grid" class="artwork-grid"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- 留言区 -->
-    <section id="messages" class="py-20 px-4">
-        <div class="max-w-4xl mx-auto">
-            <h2 class="section-title text-3xl md:text-4xl font-bold mb-12 text-white fade-in-up" style="font-family: 'Noto Serif SC', serif;">
-                观众留言
-            </h2>
-            
-            <div class="message-card p-6 md:p-8 rounded-2xl mb-8 fade-in-up">
-                <div class="mb-6">
-                    <textarea id="messageInput" class="w-full bg-transparent border border-white/20 rounded-lg p-4 text-white placeholder-white/40 focus:outline-none focus:border-yellow-600/50 resize-none" rows="4" placeholder="留下您的观展感悟"></textarea>
+    <!-- 陈师曾参展作品 -->
+    <section id="chen" class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="info-card p-8 md:p-12 fade-in-up">
+                <h2 class="text-3xl md:text-4xl font-bold text-white flex items-center mb-8" style="font-family: 'Noto Serif SC', serif;">
+                    <span class="exhibition-badge exhibition-badge-small mr-3">展</span>
+                    陈师曾参展作品
+                </h2>
+                
+                <!-- 陈师曾简介 -->
+                <div class="mb-12 p-6 bg-black/20 rounded-xl">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/3">
+                            <div class="w-32 h-32 mx-auto md:mx-0 rounded-full overflow-hidden bg-gray-700">
+                                <img src="陈师曾相关图片/陈师曾.jpg" alt="陈师曾" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                            </div>
+                        </div>
+                        <div class="md:w-2/3">
+                            <h3 class="text-2xl font-bold text-yellow-600 mb-4">陈师曾（1876-1923）</h3>
+                            <p class="text-white/80 leading-relaxed mb-4">名衡恪，字师曾，号槐堂、朽者、朽道人，斋名染仓室，江西义宁（今修水）人。近代著名画家、书法家、金石篆刻家、美术教育家、美术史论家。撰有《文人画之价值》《中国文人画之研究》等文章。</p>
+                            <p class="text-white/80 leading-relaxed">作为该展览的核心组织者及"中国画学研究会"的灵魂人物，陈师曾兼具"传统艺术捍卫者"与"文化转译者"的双重身份：他一方面致力于捍卫文人画价值，回击"中国画衰败论"；视野发掘另一方面凭借开阔的国际新锐画家。其中最典型的贡献便是在1922年第二回中日联展中，力荐并携齐白石作品赴日参展，助其一举成名，不仅彻底改变了齐白石的命运，更深刻影响了中国现代美术史的走向。</p>
+                        </div>
+                    </div>
                 </div>
-                <button id="submitMessage" class="px-6 py-2 bg-gradient-to-r from-yellow-600 to-yellow-700 text-white rounded-full hover:from-yellow-700 hover:to-yellow-800 transition-all">
-                    发表留言
-                </button>
+
+                <!-- 陈师曾相关图片 -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-bold text-yellow-600 mb-4 flex items-center"><i class="fas fa-images mr-2经历相关"></i>个人>
+                    <div图片</h3 class="gallery-grid">
+                        <div class="gallery-item" onclick="openImageModal('陈师曾相关图片/陈师曾三兄弟.PNG', '陈师曾三兄弟')">
+                            <img src="陈师曾相关图片/陈师曾三兄弟.PNG" alt="陈师曾三兄弟" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%231a1a2e%2200%22 height width=%224=%22300%22/%3E%3Ctext fill=%22%23D4AF37%22 font-size=%2216%22 x=%22200%22 y=%22150%22 text-anchor=%22middle%22%3E陈师曾三兄弟3C/svg%%3C/text%3E%3E'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/ items-end p-70 to-transparent flex4"><span class="text-white text-sm">陈师曾三兄弟</span></div>
+                        </div>
+                        <div class="gallery-item" onclick="openImageModal('陈师陈曾相关图片/师曾与北京友人（后左一陈师曾）.PNG', '陈师曾与北京友人')曾相关图片/">
+                            <img src="陈师陈师曾与北京友人（后左一陈师曾）.PNG" alt="陈师曾与北京友人" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/200 viewBox=%220 0/svg%220 400 300%22%3E%3Crect fill=%22%231a1a2e%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23D4AF37%22 font-size=%2216%22 x=%22200%22 y=%22150%22 text-anchor=%22middle%陈师曾与22%3E北京友人%3C/text%3E%3C/svg%3E'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4"><span class="text-white text-sm">陈师曾与北京友人</span></div>
+                        </div>
+                        <div class="gallery-item" onclick="openImageModal('陈师曾相关图片/父亲：父亲：陈三陈三立.PNG', '立')">
+                            <img src="陈师曾相关图片/父亲：陈三立.PNG" alt="父亲：陈三立" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%1a1a3Crect fill=%22%232e%2200%22 height width=%224=%22300%22/%3E%3Ctext fill=%22%23D4AF37%22 font-size=%2216%22 x=%22200%22 y=%22150%22 text-anchor=%22middle%22%3E父亲：陈三立%3C/text%3E%3C/svg%3E'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4"><span class="text-white text-sm">父亲：陈三立</span></div>
+                        </div>
+                        <div class="gallery-item" onclick="openImageModal('陈师曾相关图片/祖父：陈宝箴.PNG', '祖父：陈宝：陈宝箴')">
+                            <img src="陈师曾相关图片/祖父箴.PNG" alt="祖父：陈宝箴" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%231a1a2e%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23D4AF37%22 font-size=%22 x=%2222216%00%22 y=%22150%22 text-anchor=%22middle%22%3E箴%祖父：陈宝3C/text%3E%3C/svg%3E'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4"><span class="text-white text-sm">祖父：陈宝箴</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 陈师曾作品 -->
+                <div>
+                    <h3 class="text-xl font-bold text-yellow-600 mb-4 flex items-center"><i class="fas fa-paint-brush mr-2"></i>参展作品</h3>
+                    <div id="chen-works-grid" class="artwork-grid"></div>
             </div>
-            
-            <div id="messagesContainer" class="space-y-4">
-                <!-- 留言将通过JavaScript动态加载 -->
-            </div>
+                </div>
         </div>
     </section>
 
     <!-- 底部 -->
     <footer class="py-12 px-4 border-t border-white/10">
         <div class="max-w-6xl mx-auto">
-            <div class="flex flex-col md:flex-row items-center justify-between">
-                <div class="mb-6 md:mb-0">
-                    <div class="flex items-center justify-center mb-4">
-                        <div id="qrcode" class="bg-white p-2 rounded-lg"></div>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                <!-- 左侧：二维码竖构图 -->
+                <div class="flex flex-col items-center">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div id="qrcode" class="bg-white p-3 rounded-lg"></div>
                     </div>
-                    <p class="text-white/60 text-sm text-center">扫码访问</p>
-                    <p class="text-white/40 text-xs text-center mt-1">用手机扫描二维码访问展览网站</p>
+                    <p class="text-white/60 text-sm text-center">用手机扫描二维码访问展览网站</p>
                 </div>
+右侧：版权                
+                <!-- 信息 -->
                 <div class="text-center md:text-right">
-                    <p class="text-white/60 text-sm">© 2026 中日联合绘画展览会作品展. 保留所有权利.</p>
-                    <p class="text-white/40 text-xs mt-2">作者：艺术档案研究室 | <a href="https://github.com" class="hover:text-yellow-600">GitHub</a> · <a href="https://twitter.com" class="hover:text-yellow-600">Twitter</a> · <a href="https://linkedin.com" class="hover:text-yellow-600">LinkedIn</a></p>
-                </div>
+                    <div class="flex items-center justify-center md:justify-end mb-4">
+                        <span class="exhibition-badge exhibition-badge-small mr-3">展</span>
+                        <span class="text-xl font-bold text-yellow-600" style="font-family: 'Noto Serif SC', serif;">中日联合绘画展览会</span>
+                    </div>
+                    <p class="text-white/60 text-sm mb-2">© 2026 中日联合绘画展览会作品展. 保留所有权利.</p>
+                    <p class="text-white/40 text-xs mb-4">制作：张嫱</p>
+                    
+                    <!--  -->
+                    <div社交媒体链接 class="social-links flex justify-center md:justify-end gap-3">
+                        <a href="https://github.com/taoale007/art-exhibition" target="_blank" title="                            <i classGitHub">
+="fab fa-github text-lg"></i>
+                        <a href                        </a>
+="javascript:void(0)" onclick="showWechatQR()" title="微信">
+                            <i class="fab fa-weixin text-lg"></i>
+                        </a>
+                        <a href="https://weibo.com" target="_blank" title="微博">
+                            <i class="fab fa-weibo text-lg"></i>
+                        </div>
+                </a>
+                    </div>
             </div>
         </div>
     </footer>
 
     <!-- 图片模态框 -->
-    <div id="imageModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/90" onclick="closeModal()"></div>
-        <div class="modal-content relative max-w-4xl max-h-[90vh] overflow-auto">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-white text-3xl hover:text-yellow-600 transition-colors z-10">&times;</button>
-            <img id="modalImage" src="" alt="" class="w-full h-auto rounded-lg shadow-2xl">
-            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg">
-                <h3 id="modalTitle" class="text-2xl font-bold text-white mb-2"></h3>
-                <p id="modalAuthor" class="text-yellow-600 mb-2"></p>
-                <p id="modalDescription" class="text-white/70"></p>
+    <div id="image flex items-center justifyModal" class="modal fixed inset--center p0 z-50 <div class="absolute inset-0-4">
+        bg-black/90" onclick="closeModal()"></div>
+        <div class="modal-content-gray-900 rounded relative bg-lg overflow-hidden">
+ onclick="closeModal            <button()" class="absolute top-4 right-4 text-white text-3xl hover:text-yellow-600 transition-colors z-10">&times;</button>
+            <img id="modalImage" src class="max="" alt=""-w-full max-h-[80vh] object-contain">
+            <div class="p-4 bg-black/50">
+                <h3 id="modalTitle" class="text-lg font-bold text-white"></h3>
             </div>
         </div>
     </div>
 
     <!-- 返回顶部 -->
-    <div id="backToTop" class="back-to-top">
-        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-        </svg>
+    <div id="backToTop" class="back-to-top" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up text-white text-xl"></i>
     </div>
 
     <script>
-        // ============================================================
-        // 图片格式自动检测
-        // ============================================================
-        const imageFormats = ['jpg', 'png', 'jpeg', 'gif', 'webp'];
+        // 图片格式自动 imageFormats = ['检测
+        constjpg', 'png', 'jpeg', 'gif', 'webp'];
 
-        // 尝试加载图片，自动检测格式
-        function tryLoadImage(basePath, callback, formatIndex = 0) {
+        function tryPath, callbackLoadImage(base, formatIndex = 0) {
             if (formatIndex >= imageFormats.length) {
                 callback(null);
-                return;
-            }
-            
-            const img = new Image();
-            img.onload = function() {
+ }
+            const                return;
+            img = new Image.onload = function();
+            img() {
                 callback(basePath + '.' + imageFormats[formatIndex]);
             };
-            img.onerror = function() {
-                tryLoadImage(basePath, callback, formatIndex + 1);
+ function() {
+                           img.onerror = tryLoadImage(basePath, callback, formatIndex + 1);
             };
-            img.src = basePath + '.' + imageFormats[formatIndex];
+            img '.' + imageFormats.src = basePath +[formatIndex];
         }
 
-        // ============================================================
-        // 作品数据 - 与GitHub仓库实际文件完全一致
-        // ============================================================
+        // 作品数据
         const artworks = {
-            // 陈师曾作品
-            chenShizeng: [
-                { id: 1, title: "墨竹图", author: "陈师曾", imageBase: "《墨竹图》1919", path: "陈师曾作品/", exhibition: "陈师曾作品", description: "陈师曾墨竹作品，1919年作。" },
-                { id: 2, title: "墨竹图", author: "陈师曾", imageBase: "《墨竹图》1923", path: "陈师曾作品/", exhibition: "陈师曾作品", description: "陈师曾墨竹作品，1923年作。" },
-                { id: 3, title: "墨竹图", author: "陈师曾", imageBase: "《墨竹图》3", path: "陈师曾作品/", exhibition: "陈师曾作品", description: "陈师曾墨竹作品。" },
-                { id: 4, title: "山茶", author: "陈师曾", imageBase: "《山茶》", path: "陈师曾作品/", exhibition: "陈师曾作品", description: "陈师曾山茶花作品。" },
-                { id: 5, title: "山茶", author: "陈师曾", imageBase: "《山茶》1923", path: "陈师曾作品/", exhibition: "陈师曾作品", description: "陈师曾山茶花作品，1923年作。" },
-                { id: 6, title: "梅石图", author: "陈师曾", imageBase: "《梅石图》", path: "陈师曾作品/", exhibition: "陈师曾作品", description: "梅石相映，意境深远。" },
-                { id: 7, title: "牡丹扇面", author: "陈师曾", imageBase: "《牡丹》扇面1919", path: "陈师曾作品/", exhibition: "陈师曾作品", description: "牡丹扇面，1919年作。" },
-                { id: 8, title: "石竹扇面", author: "陈师曾", imageBase: "《石竹扇面》", path: "陈师曾作品/", exhibition: "陈师曾作品", description: "石竹扇面佳作。" },
-                { id: 9, title: "兰花扇面", author: "陈师曾", imageBase: "陈师曾《兰花扇面》", path: "陈师曾作品/", exhibition: "陈师曾作品", description: "兰花扇面，清雅脱俗。" },
-            ],
-
-            // 第一回联展 - 中国画家作品
             exhibition1China: [
-                { id: 101, title: "达摩尊者像", author: "王一亭", imageBase: "王一亭《达摩尊者像》", path: "第一回联展/中国画家作品/", exhibition: "第一回联展", description: "王一亭达摩尊者像作品。" },
-                { id: 102, title: "山茶", author: "陈师曾", imageBase: "陈师曾《山茶》", path: "第一回联展/中国画家作品/", exhibition: "第一回联展", description: "陈师曾山茶花作品。" },
+                { id: 101, title: "达摩尊者像", author: "王一亭", imageBase: "王一亭《达摩尊者像》", path: "第一回联展/中国画家作品/" },
+                { id: 102, title: "山茶", author: "陈师曾", imageBase: "陈师曾《山茶》", path: "第一回联展/中国画家作品/" },
             ],
-
-            // 第一回联展 - 日本画家作品
             exhibition1Japan: [
-                { id: 201, title: "临流顾影", author: "渡边晨畝", imageBase: "渡边晨畝《临流顾影》", path: "第一回联展/日本画家作品/", exhibition: "第一回联展", description: "渡边晨畝临流顾影作品。" },
-                { id: 202, title: "月宫图", author: "渡边晨畝", imageBase: "渡边晨畝《月宫图》", path: "第一回联展/日本画家作品/", exhibition: "第一回联展", description: "渡边晨畝月宫图作品。" },
+                { id: 201, title: "临流顾影", author: "渡边晨畝", imageBase: "渡边晨畝《临流顾影》", path: "第一回联展/日本画家作品/" },
+                { id: 202, title: "月宫图", author: "渡边晨渡边晨畝", imageBase: "畝《月宫图》", path: "第一回联展/日本画家作品/" },
             ],
-
-            // 第二回联展 - 中国画家作品
             exhibition2China: [
-                { id: 301, title: "青女素娥", author: "俞明", imageBase: "俞明《青女素娥》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "俞明青女素娥作品。" },
-                { id: 302, title: "元章拜石", author: "俞语霜", imageBase: "俞语霜《元章拜石》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "俞语霜元章拜石作品。" },
-                { id: 303, title: "真趣", author: "凌文渊", imageBase: "凌文渊《真趣》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "凌文渊真趣作品。" },
-                { id: 304, title: "山水", author: "叶伯常", imageBase: "叶伯常《山水》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "叶伯常山水作品。" },
-                { id: 305, title: "红树青山", author: "吕万（选青）", imageBase: "吕万（选青）《红树青山》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "吕万红树青山作品。" },
-                { id: 306, title: "柳阴放棹", author: "吴仲熊", imageBase: "吴仲熊《柳阴放棹》y", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "吴仲熊柳阴放棹作品。" },
-                { id: 307, title: "墨菊", author: "吴昌硕", imageBase: "吴昌硕《墨菊》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "吴昌硕墨菊作品。" },
-                { id: 308, title: "罗浮香雪", author: "吴杏芬", imageBase: "吴杏芬《罗浮香雪》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "吴杏芬罗浮香雪作品。" },
-                { id: 309, title: "山亭秋霁", author: "吴熙曾", imageBase: "吴熙曾《山亭秋霁》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "吴熙曾山亭秋霁作品。" },
-                { id: 310, title: "芭蕉", author: "徐世昌", imageBase: "徐世昌《芭蕉》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "徐世昌芭蕉作品。" },
-                { id: 311, title: "佛像", author: "梅兰芳", imageBase: "梅兰芳《佛像》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "梅兰芳佛像作品。" },
-                { id: 312, title: "白莲", author: "江采（南蘋）", imageBase: "江采（南蘋）《白莲》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "江采白莲作品。" },
-                { id: 313, title: "山馆吟秋", author: "汤涤", imageBase: "汤涤《山馆吟秋》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "汤涤山馆吟秋作品。" },
-                { id: 314, title: "岁朝", author: "潘琅圃", imageBase: "潘琅圃《岁朝》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "潘琅圃岁朝作品。" },
-                { id: 315, title: "达摩", author: "王一亭", imageBase: "王一亭《达摩》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "王一亭达摩作品。" },
-                { id: 316, title: "鵲喜", author: "王梦白", imageBase: "王梦白《鵲喜》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "王梦白鵲喜作品。" },
-                { id: 317, title: "寒林书屋", author: "秦裕", imageBase: "秦裕《寒林书屋》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "秦裕寒林书屋作品。" },
-                { id: 318, title: "深壑鸣泉", author: "萧愻", imageBase: "萧愻《深壑鸣泉》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "萧愻深壑鸣泉作品。" },
-                { id: 319, title: "万树秋声", author: "贺良朴", imageBase: "贺良朴《万树秋声》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "贺良朴万树秋声作品。" },
-                { id: 320, title: "白云红叶", author: "金城", imageBase: "金城《白云红叶》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "金城白云红叶作品。" },
-                { id: 321, title: "荷花翠鸟", author: "金陶陶", imageBase: "金陶陶《荷花翠鸟》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "金陶陶荷花翠鸟作品。" },
-                { id: 322, title: "山茶", author: "陈师曾", imageBase: "陈师曾《山茶》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "陈师曾山茶花作品。" },
-                { id: 323, title: "松林柱杖", author: "陈年", imageBase: "陈年《松林柱杖》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "陈年松林柱杖作品。" },
-                { id: 324, title: "柳阴扁舟", author: "韩心寿", imageBase: "韩心寿《柳阴扁舟》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "韩心寿柳阴扁舟作品。" },
-                { id: 325, title: "雁岩苟峰", author: "颜世清", imageBase: "颜世清《雁岩苟峰》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "颜世清雁岩苟峰作品。" },
-                { id: 326, title: "仿龚贤山水", author: "黄俊", imageBase: "黄俊《仿龚贤山水》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "黄俊仿龚贤山水作品。" },
-                { id: 327, title: "桃花坞", author: "齐白石", imageBase: "齐白石《桃花坞》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "齐白石桃花坞作品。" },
-                { id: 328, title: "横江扬舲", author: "齐白石", imageBase: "齐白石《横江扬舲》", path: "第二回联展/中国画家作品/", exhibition: "第二回联展", description: "齐白石横江扬舲作品。" },
+                { id: 301, title: "素娥青女", author: "俞明 "俞明《", imageBase:青女素娥》", path: "第二回联展/ },
+                { id中国画家作品/": 302, title: "元章拜石", author: "俞语霜", imageBase: "俞语霜《元章拜: "第二回石》", path联展/中国画家作品/" },
+                { id: 303, title: "真趣", author: "凌文: "凌文渊", imageBase渊《真趣》", path: "第二回联展/中国画家作品/" },
+                { id: 304, title: "山水", author: "叶伯常", imageBase伯常《山水: "叶》", path: "第二回联展/中国画家作品/" },
+                { id: 305, title: "红树青山", author: "吕万", imageBase: "吕万（选青）《红树青山》", path: "第二回联展/中国画家作品/" },
+                { id: 306,阴 title: "柳放棹", author: "吴仲熊", imageBase: "吴仲熊《柳阴放棹》y", path: "第二回联展/中国画家作品/" },
+                { id: 307, title: "墨菊", author: " imageBase: "吴昌硕",吴昌硕《墨菊》", path: "第二回联展/中国画家作品/" },
+                { id: 308, title: "罗浮香雪", author: "吴杏芬", imageBase: "吴杏芬《罗浮香雪》", path: "第二回联展/中国画家作品/" },
+                { id: 309, title:秋 "山亭霁", author: "吴熙曾", imageBase: "吴熙曾《山亭秋霁》", path: "第二回联展/中国画家作品/" },
+                { id: 310, title: "芭蕉", author: "徐世昌", imageBase:联展/中国 "徐世昌《芭蕉》", path: "第二回画家作品/" },
+                { id: 311, title: "佛像", author: "梅兰芳", imageBase: "梅兰芳《: "第二回佛像》", path画家作品/" },
+联展/中国 312,                { id: title: "白莲", author: "江采", imageBase: "江采（南蘋）《白莲》", path: "第二回联展/中国画家作品/" },
+                { id: 313, title: "山馆吟秋", author: "汤涤", imageBase:山馆吟秋 "汤涤《》", path: "第二回联展/中国画家作品/" },
+                { id: 314, title: "岁朝", author: "圃潘琅", imageBase: "潘琅圃《岁朝》", path: "第二回联展/中国摩画家作品/" },
+                { id: 315, title: "达", author: " imageBase: "王一亭",王一亭《达摩》", path: "第二回联展/中国画家作品/" },
+                { id: 316, title: "鵲喜", author: "王梦白", imageBase: "王梦白《鵲喜》", path: "第二回联展/中国画家作品/" },
+                { id: 317, title: "寒林书屋", author: "秦裕", imageBase: "秦裕《寒林书屋》", path: "第二回联展/中国画家作品/" },
+                { id: 318, title: "深泉", author:壑鸣 "萧愻", imageBase: "萧愻《深壑鸣泉》", path: "第二回联展/中国画家作品/" },
+                { id: 319, title: "万树秋声", author: "贺良朴", imageBase良朴《万: "贺树秋声》", path: "第二回联展/中国画家作品白云红/" },
+                { id: 320, title: "叶", author: "金城", imageBase: "金城《白云红叶》", path: "第二回联展/中国画家作品/" },
+                { id: 321, title: "荷花翠鸟", author: "金陶陶", imageBase: "金陶陶《荷花翠鸟》", path: "第二回联展/ },
+                { id中国画家作品/": 322, title: "山茶", author: "陈师曾", imageBase: "陈师曾《山茶》", path: "第二回联展/中国画家作品/" },
+                { id: 323, title: "松林柱杖", author: "陈年", imageBase: "陈年《松林柱杖》", path: "第二回联展/中国画家作品/" },
+                { id: 324, title: "柳阴", author: "扁舟韩心寿", imageBase: "韩心寿《柳阴扁舟》", path: "第二回联展/中国画家作品/" },
+                { id: 325, title: "雁岩苟峰", author: "颜世清", imageBase: "颜世清《雁岩苟峰》", path: "第二回联展/中国画家作品/" },
+                { id: 326, title龚贤: "仿山水", author: "黄俊", imageBase: "黄俊《仿龚贤山水》", path: "第二回联展/中国画家作品/" },
+                { id: 327, title: "桃花坞", author: "齐白石", imageBase: "齐白石《桃花坞》", path: "第二回联展/中国画家作品/" },
+                { id: 328, title江扬: "横舲", author: "齐白石", imageBase: "齐白石《横江扬舲》", path: "第二回联展/中国画家 ],
+            exhibition2作品/" },
+           Japan: [
+                { id: 401, title: "白銀山早晨", author: "佐藤常春", imageBase: "佐藤常春《白銀山早晨》", path: "第二回联展/日本画家作品/" },
+                { id: 402, title: "白雪紅葉", author: "小室翠云", imageBase: "小室翠云《白雪紅葉 "第二回联》", path:展/日本画家作品/" },
+                { id: 403, title: "金鷄鳥", author: "森山香浦", imageBase: "森山香浦《金鷄鳥》", path: "/日本画家作品第二回联展/" },
+                { id: 404, title: "梅雨晴", author: "织田观潮", imageBase: "织田观潮《梅雨晴》", path: "第二回联展/日本画家作品/" },
+                { id: 405, title: "松蔭吟行", author: "西卷稻村", imageBase: "西卷稻村《松蔭吟行》", path: "第二回联展/日本画家作品/" },
             ],
-
-            // 第二回联展 - 日本画家作品
-            exhibition2Japan: [
-                { id: 401, title: "白銀山早晨", author: "佐藤常春", imageBase: "佐藤常春《白銀山早晨》", path: "第二回联展/日本画家作品/", exhibition: "第二回联展", description: "佐藤常春白銀山早晨作品。" },
-                { id: 402, title: "白雪紅葉", author: "小室翠云", imageBase: "小室翠云《白雪紅葉》", path: "第二回联展/日本画家作品/", exhibition: "第二回联展", description: "小室翠云白雪紅葉作品。" },
-                { id: 403, title: "金鷄鳥", author: "森山香浦", imageBase: "森山香浦《金鷄鳥》", path: "第二回联展/日本画家作品/", exhibition: "第二回联展", description: "森山香浦金鷄鳥作品。" },
-                { id: 404, title: "梅雨晴", author: "织田观潮", imageBase: "织田观潮《梅雨晴》", path: "第二回联展/日本画家作品/", exhibition: "第二回联展", description: "织田观潮梅雨晴作品。" },
-                { id: 405, title: "松蔭吟行", author: "西卷稻村", imageBase: "西卷稻村《松蔭吟行》", path: "第二回联展/日本画家作品/", exhibition: "第二回联展", description: "西卷稻村松蔭吟行作品。" },
-            ],
-
-            // 第三回联展 - 中国画家作品
             exhibition3China: [
-                { id: 501, title: "叶伯常", author: "叶伯常", imageBase: "叶伯常", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "叶伯常作品。" },
-                { id: 502, title: "吕万", author: "吕万", imageBase: "吕万", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "吕万作品。" },
-                { id: 503, title: "吴待秋", author: "吴待秋", imageBase: "吴待秋", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "吴待秋作品。" },
-                { id: 504, title: "墨竹", author: "吴昌硕", imageBase: "吴昌硕《墨竹》", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "吴昌硕墨竹作品。" },
-                { id: 505, title: "吴杏芬", author: "吴杏芬", imageBase: "吴杏芬", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "吴杏芬作品。" },
-                { id: 506, title: "吴杏芬", author: "吴杏芬", imageBase: "吴杏芬2", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "吴杏芬作品。" },
-                { id: 507, title: "孙友三", author: "孙友三", imageBase: "孙友三", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "孙友三作品。" },
-                { id: 508, title: "康有为", author: "康有为", imageBase: "康有为", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "康有为作品。" },
-                { id: 509, title: "乔松", author: "徐世昌", imageBase: "徐世昌《乔松》", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "徐世昌乔松作品。" },
-                { id: 510, title: "杨雪瑶", author: "杨雪瑶", imageBase: "杨雪瑶", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "杨雪瑶作品。" },
-                { id: 511, title: "汪亚尘", author: "汪亚尘", imageBase: "汪亚尘", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "汪亚尘作品。" },
-                { id: 512, title: "潘琅圃", author: "潘琅圃", imageBase: "潘琅圃", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "潘琅圃作品。" },
-                { id: 513, title: "达摩", author: "王一亭", imageBase: "王一亭《达摩》", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "王一亭达摩作品。" },
-                { id: 514, title: "山水", author: "萧愻（谦中）", imageBase: "萧愻（谦中）《山水》", path: "第三回联展/中国画家作品/", exhibition: "第三回联展", description: "萧愻山水作品。" },
+                { id: 501, title: "叶伯常", author: "叶伯常", imageBase: "叶伯常", path: "第三回联展/中国画家作品/" },
+                { id: 502, title: "吕万", author: "吕万 "吕万",", imageBase: path: "第三回联展/中国画家作品/" },
+                { id: 503, title: "吴待秋", author: "吴待秋", imageBase: "吴待秋", path: "第三回联展/中国画家作品/" },
+                { id: 504, title: "墨竹", author: "吴昌硕",墨竹》", imageBase: "吴昌硕《 path: "第三回联展/中国画家作品/" },
+                { id: 505, title: "吴杏芬", author: "吴杏芬", imageBase: "吴杏芬", path: "第三回联展/中国画家作品/" },
+                { id: 506, title: "吴杏芬", author: "吴杏芬", imageBase: "吴杏芬2", path: "第三回联展/中国画家作品/" },
+                { id: 507, title: "孙友三", author: "孙友三", imageBase: "孙友三", path: "第三回联展/中国画家作品/": 508 },
+                { id, title: "康有为", author: "康有为", imageBase: "康有为", path: "第三回联展/中国                { id:画家作品/" },
+ 509, title: "乔松", author: "徐世昌",徐世昌《 imageBase: "乔松》", path: "第三回联展/ },
+                { id中国画家作品/": 510, title: "杨雪瑶", author: "杨雪瑶", imageBase: "杨雪瑶", path: "第三回联展/中国画家作品/" },
+                { id: 511, title: "汪亚尘", author: "汪亚尘", imageBase: "汪亚尘", path: "第三回联展/中国画家作品/" },
+                { id: 512, title: "潘琅圃", author: "潘琅圃", imageBase: "潘琅圃", path: "第三回联展/中国画家作品/" },
+                { id: 513, title: "达摩", author: "王一亭", imageBase: "王一亭《达摩》", path: "第三回联展/中国画家作品/" },
+                { id: 514, title: "山水", author: "萧愻", imageBase: "萧愻（谦中）《山水》", path: "第三回联展/中国画家作品/" },
             ],
-
-            // 第三回联展 - 日本画家作品
             exhibition3Japan: [
-                { id: 601, title: "冈本一平", author: "冈本一平", imageBase: "冈本一平", path: "第三回联展/日本画家作品/", exhibition: "第三回联展", description: "冈本一平作品。" },
-                { id: 602, title: "小室翠云", author: "小室翠云", imageBase: "小室翠云", path: "第三回联展/日本画家作品/", exhibition: "第三回联展", description: "小室翠云作品。" },
-                { id: 603, title: "春深", author: "小室翠云", imageBase: "小室翠云《春深》", path: "第三回联展/日本画家作品/", exhibition: "第三回联展", description: "小室翠云春深作品。" },
-                { id: 604, title: "山内多门", author: "山内多门", imageBase: "山内多门", path: "第三回联展/日本画家作品/", exhibition: "第三回联展", description: "山内多门作品。" },
-                { id: 605, title: "灯笼大臣", author: "池泽青峰", imageBase: "池泽青峰《灯笼大臣》", path: "第三回联展/日本画家作品/", exhibition: "第三回联展", description: "池泽青峰灯笼大臣作品。" },
-                { id: 606, title: "孔雀", author: "渡边晨敔", imageBase: "渡边晨敔《孔雀》", path: "第三回联展/日本画家作品/", exhibition: "第三回联展", description: "渡边晨敔孔雀作品。" },
+                { id: 601, title: "冈本一平", author: "冈本一平", imageBase: "冈本一平", path: "第三回联展/日本画家作品/" },
+                { id: 602, title: "小室翠云", author: "小室翠云", imageBase: "小室翠云", path: "第三回联展/日本画家作品/" },
+                { id: 603, title: "春深", author: "小室翠云", imageBase: "小室翠云《春深》", path: "第三回联展/日本画家作品/" },
+                { id: 604, title: "山内多门", author: "山内多门", imageBase: "山内多门", path: "第三回联展/日本画家作品/" },
+                { id: 605, title: "灯笼大臣", author: "池泽青峰", imageBase: "池泽青峰《灯笼大臣》", path: "第三回联展/日本画家作品/" },
+                { id: 606, title: "孔雀", author: "渡边晨敔", imageBase: "渡边晨敔《孔雀》", path: "第三回联展/日本画家作品/" },
             ],
-
-            // 第四回联展 - 中国画家作品
             exhibition4China: [
-                { id: 701, title: "五松图", author: "俞云", imageBase: "俞云《五松图》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "俞云五松图作品。" },
-                { id: 702, title: "云鹤松阴", author: "冯超然", imageBase: "冯超然《云鹤松阴》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "冯超然云鹤松阴作品。" },
-                { id: 703, title: "向阳华", author: "凌文渊", imageBase: "凌文渊《向阳华》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "凌文渊向阳华作品。" },
-                { id: 704, title: "云山落瀑", author: "吕万", imageBase: "吕万《云山落瀑》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "吕万云山落瀑作品。" },
-                { id: 705, title: "溪山琴趣", author: "吴仲熊", imageBase: "吴仲熊《溪山琴趣》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "吴仲熊溪山琴趣作品。" },
-                { id: 706, title: "墨菊", author: "吴昌硕", imageBase: "吴昌硕《墨菊》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "吴昌硕墨菊作品。" },
-                { id: 707, title: "梅石图", author: "吴昌硕", imageBase: "吴昌硕《梅石图》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "吴昌硕梅石图作品。" },
-                { id: 708, title: "牡丹", author: "吴昌硕", imageBase: "吴昌硕《牡丹》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "吴昌硕牡丹作品。" },
-                { id: 709, title: "菊石图", author: "吴昌硕", imageBase: "吴昌硕《菊石图》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "吴昌硕菊石图作品。" },
-                { id: 710, title: "江乡清夏", author: "吴湖帆", imageBase: "吴湖帆《江乡清夏》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "吴湖帆江乡清夏作品。" },
-                { id: 711, title: "仿大痴山水", author: "吴熙曾", imageBase: "吴熙曾《仿大痴山水》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "吴熙曾仿大痴山水作品。" },
-                { id: 712, title: "竹林高涧", author: "周肇祥", imageBase: "周肇祥《竹林高涧》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "周肇祥竹林高涧作品。" },
-                { id: 713, title: "秋柳芙蓉", author: "徐世昌", imageBase: "徐世昌《秋柳芙蓉》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "徐世昌秋柳芙蓉作品。" },
-                { id: 714, title: "袁盎却座图", author: "徐操", imageBase: "徐操《袁盎却座图》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "徐操袁盎却座图作品。" },
-                { id: 715, title: "苍松", author: "曾熙", imageBase: "曾熙《苍松》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "曾熙苍松作品。" },
-                { id: 716, title: "三羊图", author: "杨葆益", imageBase: "杨葆益《三羊图》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "杨葆益三羊图作品。" },
-                { id: 717, title: "佛像", author: "梅兰芳", imageBase: "梅兰芳《佛像》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "梅兰芳佛像作品。" },
-                { id: 718, title: "普贤菩萨", author: "梅兰芳", imageBase: "梅兰芳《普贤菩萨》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "梅兰芳普贤菩萨作品。" },
-                { id: 719, title: "黄月季", author: "江采", imageBase: "江采《黄月季》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "江采黄月季作品。" },
-                { id: 720, title: "寒林夕照", author: "汪大燮", imageBase: "汪大燮《寒林夕照》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "汪大燮寒林夕照作品。" },
-                { id: 721, title: "古木寒鸦", author: "王一亭", imageBase: "王一亭《古木寒鸦》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "王一亭古木寒鸦作品。" },
-                { id: 722, title: "荷花", author: "章怡萱", imageBase: "章怡萱《荷花》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "章怡萱荷花作品。" },
-                { id: 723, title: "霜林高士", author: "胡佩衡", imageBase: "胡佩衡《霜林高士》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "胡佩衡霜林高士作品。" },
-                { id: 724, title: "罂粟", author: "胡信履", imageBase: "胡信履《罂粟》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "胡信履罂粟作品。" },
-                { id: 725, title: "寒山", author: "萧俊贤", imageBase: "萧俊贤《寒山》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "萧俊贤寒山作品。" },
-                { id: 726, title: "秋严古迳", author: "萧愻", imageBase: "萧愻《秋严古迳》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "萧愻秋严古迳作品。" },
-                { id: 727, title: "寿带青松", author: "载洵贝勒", imageBase: "载洵贝勒《寿带青松》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "载洵贝勒寿带青松作品。" },
-                { id: 728, title: "松荫待月", author: "金城", imageBase: "金城《松荫待月》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "金城松荫待月作品。" },
-                { id: 729, title: "清湘渔父", author: "金城", imageBase: "金城《清湘渔父》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "金城清湘渔父作品。" },
-                { id: 730, title: "翠竹游鸟", author: "金章", imageBase: "金章《翠竹游鸟》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "金章翠竹游鸟作品。" },
-                { id: 731, title: "梅石", author: "金芬", imageBase: "金芬《梅石》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "金芬梅石作品。" },
-                { id: 732, title: "松", author: "陈宝琛", imageBase: "陈宝琛《松》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "陈宝琛松作品。" },
-                { id: 733, title: "独树老夫家", author: "陈年", imageBase: "陈年《独树老夫家》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "陈年独树老夫家作品。" },
-                { id: 734, title: "仿元人松树", author: "陈汉弟", imageBase: "陈汉弟《仿元人松树》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "陈汉弟仿元人松树作品。" },
-                { id: 735, title: "芦汀聚雁", author: "颜世清", imageBase: "颜世清《芦汀聚雁》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "颜世清芦汀聚雁作品。" },
-                { id: 736, title: "春阴骏骨", author: "马晋", imageBase: "马晋《春阴骏骨》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "马晋春阴骏骨作品。" },
-                { id: 737, title: "不倒翁", author: "齐白石", imageBase: "齐白石《不倒翁》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "齐白石不倒翁作品。" },
-                { id: 738, title: "蜻蜓", author: "齐良琨", imageBase: "齐良琨《蜻蜓》", path: "第四回联展/中国画家作品/", exhibition: "第四回联展", description: "齐良琨蜻蜓作品。" },
+                { id: 701, title: "五松图", author: "俞云", imageBase: "俞云《五松图》", path: "第四回联展/中国画家作品 id: 70/" },
+                {2, title: "云鹤松阴", author: "冯超然", imageBase: "冯超然《云鹤松阴》", path: "第四回联展/中国画家作品/" },
+                { id: 703, title: "向阳华", author: "凌文渊", imageBase: "凌文渊《向阳华》", path: "第四回联展/中国画家作品/" },
+                { id: 704, title: "云山落瀑", author: "吕万", imageBase: "吕万《云山落瀑》", path: "第四回联展/中国画家作品/" },
+                { id: 705, title: "溪山琴趣", author: "吴仲熊", imageBase: "吴仲熊《溪山琴趣》", path: "第四回联展/中国画家作品/" },
+                { id: 706, title: "墨菊", author: "吴昌硕", imageBase: "吴昌硕《墨菊》", path: "第四回联展/中国画家作品/" },
+                { id: 707, title: "梅石图", author: "吴昌硕", imageBase: "吴昌硕《梅石图》", path: "第四回联展/中国画家作品/" },
+                { id: 708, title: "牡丹", author: "吴昌硕", imageBase: "吴昌硕《牡丹》", path: "第四回联展/中国画家作品/" },
+                { id: 709, title: "菊石图", author: "吴昌硕", imageBase: "吴昌硕《菊石图》", path: "第四回联展/中国画家作品/" },
+                { id: 710, title: "江乡清夏", author: "吴湖帆", imageBase: "吴湖帆《江乡清夏》", path: "第四回联展/中国画家作品/" },
+                { id: 711, title: "仿大痴山水", author: "吴熙曾", imageBase: "吴熙曾《仿大痴山水》", path: "第四回联展/中国画家作品/" },
+                { id: 712, title: "竹林高涧", author: "周肇祥", imageBase: "周肇祥《竹林高涧》", path: "第四回联展/中国画家作品/" },
+                { id: 713, title: "秋柳芙蓉", author: "徐世昌", imageBase: "徐世昌《秋柳芙蓉》", path: "第四回联展/中国画家作品/" },
+                { id: 714, title: "袁盎却座图", author: "徐操", imageBase: "徐操《袁盎却座图》", path: "第四回联展/中国画家作品/" },
+                { id: 715, title: "苍松", author: "曾熙", imageBase: "曾熙《苍松》", path: "第四回联展/中国画家作品/" },
+                { id: 716, title: "三羊图", author: "杨葆益", imageBase: "杨葆益《三羊图》", path: "第四回联展/中国画家作品/" },
+                { id: 717, title: "佛像", author: "梅兰芳", imageBase: "梅兰芳《佛像》", path: "第四回联展/中国画家作品/" },
+                { id: 718, title: "普贤菩萨", author: "梅兰芳", imageBase: "梅兰芳《普贤菩萨》", path: "第四回联展/中国画家作品/" },
+                { id: 719, title: "黄月季", author: "江采", imageBase: "江采《黄月季》", path: "第四回联展/中国画家作品/" },
+                { id: 720, title: "寒林夕照", author: "汪大燮", imageBase: "汪大燮《寒林夕照》", path: "第四回联展/中国画家作品/" },
+                { id: 721, title: "古木寒鸦", author: "王一亭", imageBase: "王一亭《古木寒鸦》", path: "第四回联展/中国画家作品/" },
+                { id: 722, title: "荷花", author: "章怡萱", imageBase: "章怡萱《荷花》", path: "第四回联展/中国画家作品/" },
+                { id: 723, title: "霜林高士", author: "胡佩衡", imageBase: "胡佩衡《霜林高士》", path: "第四回联展/中国画家作品/" },
+                { id: 724, title: "罂粟", author: "胡信履", imageBase: "胡信履《罂粟》", path: "第四回联展/中国画家作品/" },
+                { id: 725, title: "寒山", author: "萧俊贤", imageBase: "萧俊贤《寒山》", path: "第四回联展/中国画家作品/" },
+                { id: 726, title: "秋严古迳", author: "萧愻", imageBase: "萧愻《秋严古迳》", path: "第四回联展/中国画家作品/" },
+                { id: 727, title: "寿带青松", author: "载洵贝勒", imageBase: "载洵贝勒《寿带青松》", path: "第四回联展/中国画家作品/" },
+                { id: 728, title: "松荫待月", author: "金城", imageBase: "金城《松荫待月》", path: "第四回联展/中国画家作品/" },
+                { id: 729, title: "清湘渔父", author: "金城", imageBase: "金城《清湘渔父》", path: "第四回联展/中国画家作品/" },
+                { id: 730, title: "翠竹游鸟", author: "金章", imageBase: "金章《翠竹游鸟》", path: "第四回联展/中国画家作品/" },
+                { id: 731, title: "梅石", author: "金芬", imageBase: "金芬《梅石》", path: "第四回联展/中国画家作品/" },
+                { id: 732, title: "松", author: "陈宝琛", imageBase: "陈宝琛《松》", path: "第四回联展/中国画家作品/" },
+                { id: 733, title: "独树老夫家", author: "陈年", imageBase: "陈年《独树老夫家》", path: "第四回联展/中国画家作品/" },
+                { id: 734, title: "仿元人松树", author: "陈汉弟", imageBase: "陈汉弟《仿元人松树》", path: "第四回联展/中国画家作品/" },
+                { id: 735, title: "芦汀聚雁", author: "颜世清", imageBase: "颜世清《芦汀聚雁》", path: "第四回联展/中国画家作品/" },
+                { id: 736, title: "春阴骏骨", author: "马晋", imageBase: "马晋《春阴骏骨》", path: "第四回联展/中国画家作品/" },
+                { id: 737, title: "不倒翁", author: "齐白石", imageBase: "齐白石《不倒翁》", path: "第四回联展/中国画家作品/" },
+                { id: 738, title: "蜻蜓", author: "齐良琨", imageBase: "齐良琨《蜻蜓》", path: "第四回联展/中国画家作品/" },
             ],
-
-            // 第四回联展 - 日本画家作品
             exhibition4Japan: [
-                { id: 801, title: "栈道积雪", author: "小室翠云", imageBase: "小室翠云《栈道积雪》", path: "第四回联展/日本画家作品/", exhibition: "第四回联展", description: "小室翠云栈道积雪作品。" },
-                { id: 802, title: "松间飞瀑", author: "川合玉堂", imageBase: "川合玉堂《松间飞瀑》", path: "第四回联展/日本画家作品/", exhibition: "第四回联展", description: "川合玉堂松间飞瀑作品。" },
-                { id: 803, title: "鼬", author: "横山大观", imageBase: "横山大观《鼬》", path: "第四回联展/日本画家作品/", exhibition: "第四回联展", description: "横山大观鼬作品。" },
-                { id: 804, title: "孔雀哺雛", author: "渡边晨畝", imageBase: "渡边晨畝《孔雀哺雛》", path: "第四回联展/日本画家作品/", exhibition: "第四回联展", description: "渡边晨畝孔雀哺雛作品。" },
-                { id: 805, title: "村童暇日", author: "矢野桥村", imageBase: "矢野桥村《村童暇日》", path: "第四回联展/日本画家作品/", exhibition: "第四回联展", description: "矢野桥村村童暇日作品。" },
-                { id: 806, title: "子雀之图", author: "竹内栖凤", imageBase: "竹内栖凤《子雀之图》", path: "第四回联展/日本画家作品/", exhibition: "第四回联展", description: "竹内栖凤子雀之图作品。" },
-                { id: 807, title: "月下葡萄", author: "荒木十畝", imageBase: "荒木十畝《月下葡萄》", path: "第四回联展/日本画家作品/", exhibition: "第四回联展", description: "荒木十畝月下葡萄作品。" },
-                { id: 808, title: "孙姬讲武", author: "菅楯彦", imageBase: "菅楯彦《孙姬讲武》", path: "第四回联展/日本画家作品/", exhibition: "第四回联展", description: "菅楯彦孙姬讲武作品。" },
+                { id: 801, title: "栈道积雪", author: "小室翠云", imageBase: "小室翠云《栈道积雪》", path: "第四回联展/日本画家作品/" },
+                { id: 802, title: "松间飞瀑", author: "川合玉堂", imageBase: "川合玉堂《松间飞瀑》", path: "第四回联展/日本画家作品/" },
+                { id: 803, title: "鼬", author: "横山大观", imageBase: "横山大观《鼬》", path: "第四回联展/日本画家作品/" },
+                { id: 804, title: "孔雀哺雛", author: "渡边晨畝", imageBase: "渡边晨畝《孔雀哺雛》", path: "第四回联展/日本画家作品/" },
+                { id: 805, title: "村童暇日", author: "矢野桥村", imageBase: "矢野桥村《村童暇日》", path: "第四回联展/日本画家作品/" },
+                { id: 806, title: "子雀之图", author: "竹内栖凤", imageBase: "竹内栖凤《子雀之图》", path: "第四回联展/日本画家作品/" },
+                { id: 807, title: "月下葡萄", author: "荒木十畝", imageBase: "荒木十畝《月下葡萄》", path: "第四回联展/日本画家作品/" },
+                { id: 808, title: "孙姬讲武", author: "菅楯彦", imageBase: "菅楯彦《孙姬讲武》", path: "第四回联展/日本画家作品/" },
+            ],
+            chenShizeng: [
+                { id: 1, title: "墨竹图", author: "陈师曾", imageBase: "《墨竹图》1919", path: "陈师曾作品/" },
+                { id: 2, title: "墨竹图", author: "陈师曾", imageBase: "《墨竹图》1923", path: "陈师曾作品/" },
+                { id: 3, title: "墨竹图", author: "陈师曾", imageBase: "《墨竹图》3", path: "陈师曾作品/" },
+                { id: 4, title: "山茶", author: "陈师曾", imageBase: "《山茶》", path: "陈师曾作品/" },
+                { id: 5, title: "山茶", author: "陈师曾", imageBase: "《山茶》1923", path: "陈师曾作品/" },
+                { id: 6, title: "梅石图", author: "陈师曾", imageBase: "《梅石图》", path: "陈师曾作品/" },
+                { id: 7, title: "牡丹扇面", author: "陈师曾", imageBase: "《牡丹》扇面1919", path: "陈师曾作品/" },
+                { id: 8, title: "石竹扇面", author: "陈师曾", imageBase: "《石竹扇面》", path: "陈师曾作品/" },
+                { id: 9, title: "兰花扇面", author: "陈师曾", imageBase: "陈师曾《兰花扇面》", path: "陈师曾作品/" },
             ],
         };
-
-        // 获取所有作品（用于搜索）
-        function getAllArtworks() {
-            return [
-                ...artworks.chenShizeng,
-                ...artworks.exhibition1China,
-                ...artworks.exhibition1Japan,
-                ...artworks.exhibition2China,
-                ...artworks.exhibition2Japan,
-                ...artworks.exhibition3China,
-                ...artworks.exhibition3Japan,
-                ...artworks.exhibition4China,
-                ...artworks.exhibition4Japan,
-            ];
-        }
 
         // 创建作品卡片
         function createArtworkCard(artwork) {
             const card = document.createElement('div');
-            card.className = 'art-card bg-gradient-to-br from-gray-900/80 to-gray-800/80 rounded-xl overflow-hidden cursor-pointer border border-white/10 hover:border-yellow-600/50 transition-all';
-            
+            card.className = 'art-card rounded-xl overflow-hidden cursor-pointer border border-white/10 hover:border-yellow-600/50 transition-all bg-gray-800/50';
             card.innerHTML = `
-                <div class="art-card-inner aspect-square overflow-hidden relative">
-                    <div class="absolute inset-0 flex items-center justify-center bg-gray-900/50">
-                        <div class="animate-pulse text-white/30">加载中...</div>
-                    </div>
-                    <img class="w-full h-full object-cover opacity-0 transition-opacity duration-500" alt="${artwork.author}《${artwork.title}》">
+                <div class="aspect-square overflow-hidden relative bg-gray-700">
+                    <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-image text-3xl text-white/20"></i></div>
+                    <img class="w-full h-full object-cover opacity-0 transition-opacity duration-500 absolute inset-0" alt="${artwork.author}《${artwork.title}》">
                 </div>
                 <div class="p-3">
                     <h3 class="text-sm font-semibold text-white truncate">${artwork.author}《${artwork.title}》</h3>
-                    <p class="text-xs text-white/50 mt-1">${artwork.exhibition}</p>
                 </div>
             `;
-
-            // 尝试加载图片
             const img = card.querySelector('img');
-            const placeholder = card.querySelector('.absolute');
             const basePath = artwork.path + artwork.imageBase;
-            
             tryLoadImage(basePath, function(imageUrl) {
                 if (imageUrl) {
                     img.src = imageUrl;
-                    img.onload = function() {
-                        img.classList.remove('opacity-0');
-                        placeholder.style.display = 'none';
-                    };
-                } else {
-                    placeholder.innerHTML = '<div class="text-white/30 text-xs">图片加载失败</div>';
+                    img.onload = function() { img.classList.remove('opacity-0'); };
                 }
             });
-
-            // 点击打开模态框
-            card.addEventListener('click', () => openModal(artwork));
-            
-            // 悬停效果
-            card.addEventListener('mouseenter', () => {
-                document.querySelector('.custom-cursor').classList.add('hover-card');
-            });
-            card.addEventListener('mouseleave', () => {
-                document.querySelector('.custom-cursor').classList.remove('hover-card');
-            });
-
+            card.addEventListener('click', () => openImageModal(basePath, `${artwork.author}《${artwork.title}》`));
             return card;
         }
 
-        // 打开模态框
-        function openModal(artwork) {
+        // 加载作品
+        function loadArtworks() {
+            const ex1China = document.getElementById('ex1-china-grid');
+            const ex1Japan = document.getElementById('ex1-japan-grid');
+            artworks.exhibition1China.forEach(a => ex1China.appendChild(createArtworkCard(a)));
+            artworks.exhibition1Japan.forEach(a => ex1Japan.appendChild(createArtworkCard(a)));
+
+            const ex2China = document.getElementById('ex2-china-grid');
+            const ex2Japan = document.getElementById('ex2-japan-grid');
+            artworks.exhibition2China.forEach(a => ex2China.appendChild(createArtworkCard(a)));
+            artworks.exhibition2Japan.forEach(a => ex2Japan.appendChild(createArtworkCard(a)));
+
+            const ex3China = document.getElementById('ex3-china-grid');
+            const ex3Japan = document.getElementById('ex3-japan-grid');
+            artworks.exhibition3China.forEach(a => ex3China.appendChild(createArtworkCard(a)));
+            artworks.exhibition3Japan.forEach(a => ex3Japan.appendChild(createArtworkCard(a)));
+
+            const ex4China = document.getElementById('ex4-china-grid');
+            const ex4Japan = document.getElementById('ex4-japan-grid');
+            artworks.exhibition4China.forEach(a => ex4China.appendChild(createArtworkCard(a)));
+            artworks.exhibition4Japan.forEach(a => ex4Japan.appendChild(createArtworkCard(a)));
+
+            const chenWorks = document.getElementById('chen-works-grid');
+            artworks.chenShizeng.forEach(a => chenWorks.appendChild(createArtworkCard(a)));
+        }
+
+        // 折叠面板
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const iconId = id.replace('-content', '-icon');
+            const icon = document.getElementById(iconId);
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.add('active');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // 图片模态框
+        function openImageModal(src, title) {
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImage');
             const modalTitle = document.getElementById('modalTitle');
-            const modalAuthor = document.getElementById('modalAuthor');
-            const modalDescription = document.getElementById('modalDescription');
-            
-            const basePath = artwork.path + artwork.imageBase;
-            tryLoadImage(basePath, function(imageUrl) {
-                if (imageUrl) {
-                    modalImg.src = imageUrl;
-                }
+            tryLoadImage(src, function(imageUrl) {
+                if (imageUrl) modalImg.src = imageUrl;
             });
-            
-            modalTitle.textContent = artwork.title;
-            modalAuthor.textContent = artwork.author;
-            modalDescription.textContent = artwork.description;
-            
+            modalTitle.textContent = title;
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
-        // 关闭模态框
         function closeModal() {
-            const modal = document.getElementById('imageModal');
-            modal.classList.remove('active');
+            document.getElementById('imageModal').classList.remove('active');
             document.body.style.overflow = '';
         }
 
-        // 加载作品到网格
-        function loadArtworks() {
-            // 陈师曾作品
-            const chenWorksGrid = document.getElementById('chen-works-grid');
-            artworks.chenShizeng.forEach(artwork => {
-                chenWorksGrid.appendChild(createArtworkCard(artwork));
-            });
-
-            // 第一回联展
-            const exhibition1ChinaGrid = document.getElementById('exhibition1-china-grid');
-            artworks.exhibition1China.forEach(artwork => {
-                exhibition1ChinaGrid.appendChild(createArtworkCard(artwork));
-            });
-            
-            const exhibition1JapanGrid = document.getElementById('exhibition1-japan-grid');
-            artworks.exhibition1Japan.forEach(artwork => {
-                exhibition1JapanGrid.appendChild(createArtworkCard(artwork));
-            });
-
-            // 第二回联展
-            const exhibition2ChinaGrid = document.getElementById('exhibition2-china-grid');
-            artworks.exhibition2China.forEach(artwork => {
-                exhibition2ChinaGrid.appendChild(createArtworkCard(artwork));
-            });
-            
-            const exhibition2JapanGrid = document.getElementById('exhibition2-japan-grid');
-            artworks.exhibition2Japan.forEach(artwork => {
-                exhibition2JapanGrid.appendChild(createArtworkCard(artwork));
-            });
-
-            // 第三回联展
-            const exhibition3ChinaGrid = document.getElementById('exhibition3-china-grid');
-            artworks.exhibition3China.forEach(artwork => {
-                exhibition3ChinaGrid.appendChild(createArtworkCard(artwork));
-            });
-            
-            const exhibition3JapanGrid = document.getElementById('exhibition3-japan-grid');
-            artworks.exhibition3Japan.forEach(artwork => {
-                exhibition3JapanGrid.appendChild(createArtworkCard(artwork));
-            });
-
-            // 第四回联展
-            const exhibition4ChinaGrid = document.getElementById('exhibition4-china-grid');
-            artworks.exhibition4China.forEach(artwork => {
-                exhibition4ChinaGrid.appendChild(createArtworkCard(artwork));
-            });
-            
-            const exhibition4JapanGrid = document.getElementById('exhibition4-japan-grid');
-            artworks.exhibition4Japan.forEach(artwork => {
-                exhibition4JapanGrid.appendChild(createArtworkCard(artwork));
-            });
+        // 主题切换
+        function toggleTheme() {
+            const body = document.body;
+            if (body.classList.contains('dark')) {
+                body.classList.remove('dark');
+                body.classList.add('light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.remove('light');
+                body.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
         }
 
-        // 自定义光标跟随
-        function initCustomCursor() {
-            const cursor = document.querySelector('.custom-cursor');
-            const lightOrb = document.querySelector('.light-orb');
-            const spotlights = document.querySelectorAll('.spotlight');
-            
-            document.addEventListener('mousemove', (e) => {
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
-                
-                lightOrb.style.left = e.clientX + 'px';
-                lightOrb.style.top = e.clientY + 'px';
-                
-                spotlights.forEach((spotlight, index) => {
-                    const delay = (index + 1) * 50;
-                    setTimeout(() => {
-                        spotlight.style.left = e.clientX + 'px';
-                        spotlight.style.top = e.clientY + 'px';
-                    }, delay);
-                });
-            });
+        // 初始化主题
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.body.classList.remove('dark', 'light');
+                document.body.classList.add(savedTheme);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.body.classList.remove('dark');
+                document.body.classList.add('light');
+            }
         }
 
         // 创建粒子
@@ -1210,32 +1220,23 @@
         function initScrollAnimations() {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
                 });
             }, { threshold: 0.1 });
-
-            document.querySelectorAll('.fade-in-up').forEach(el => {
-                observer.observe(el);
-            });
+            document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
         }
 
         // 返回顶部
         function initBackToTop() {
             const backToTop = document.getElementById('backToTop');
-            
             window.addEventListener('scroll', () => {
-                if (window.scrollY > 500) {
-                    backToTop.classList.add('visible');
-                } else {
-                    backToTop.classList.remove('visible');
-                }
+                if (window.scrollY > 500) backToTop.classList.add('visible');
+                else backToTop.classList.remove('visible');
             });
-            
-            backToTop.addEventListener('click', () => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // 移动端菜单
@@ -1244,126 +1245,11 @@
             const mobileMenu = document.getElementById('mobileMenu');
             const closeMobileMenu = document.getElementById('closeMobileMenu');
             const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
-            
-            mobileMenuBtn.addEventListener('click', () => {
-                mobileMenu.classList.remove('hidden');
-            });
-            
-            closeMobileMenu.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-            });
-            
+            mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('hidden'));
+            closeMobileMenu.addEventListener('click', () => mobileMenu.classList.add('hidden'));
             mobileMenuLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.add('hidden');
-                });
+                link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
             });
-        }
-
-        // 搜索功能
-        function initSearch() {
-            const searchInput = document.getElementById('searchInput');
-            const searchResults = document.getElementById('searchResults');
-            
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase().trim();
-                
-                if (query.length < 1) {
-                    searchResults.classList.remove('active');
-                    return;
-                }
-                
-                const allArtworks = getAllArtworks();
-                const results = allArtworks.filter(artwork => 
-                    artwork.title.toLowerCase().includes(query) ||
-                    artwork.author.toLowerCase().includes(query) ||
-                    artwork.exhibition.toLowerCase().includes(query)
-                );
-                
-                if (results.length > 0) {
-                    searchResults.innerHTML = results.slice(0, 10).map(artwork => `
-                        <div class="search-result-item" onclick="scrollToArtwork('${artwork.exhibition}', '${artwork.author}《${artwork.title}》')">
-                            <div class="font-semibold text-white">${artwork.author}《${artwork.title}》</div>
-                            <div class="text-xs text-white/50 mt-1">${artwork.exhibition}</div>
-                        </div>
-                    `).join('');
-                    searchResults.classList.add('active');
-                } else {
-                    searchResults.innerHTML = '<div class="p-4 text-white/60 text-center">未找到相关作品</div>';
-                    searchResults.classList.add('active');
-                }
-            });
-            
-            document.addEventListener('click', (e) => {
-                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                    searchResults.classList.remove('active');
-                }
-            });
-        }
-
-        // 滚动到作品
-        function scrollToArtwork(exhibition, title) {
-            const searchResults = document.getElementById('searchResults');
-            searchResults.classList.remove('active');
-            
-            let sectionId = '';
-            if (exhibition === '陈师曾作品') {
-                sectionId = 'chen-works';
-            } else if (exhibition === '第一回联展') {
-                sectionId = 'exhibition1';
-            } else if (exhibition === '第二回联展') {
-                sectionId = 'exhibition2';
-            } else if (exhibition === '第三回联展') {
-                sectionId = 'exhibition3';
-            } else if (exhibition === '第四回联展') {
-                sectionId = 'exhibition4';
-            }
-            
-            if (sectionId) {
-                const section = document.getElementById(sectionId);
-                if (section) {
-                    section.scrollIntoView({ behavior: 'smooth' });
-                }
-            }
-        }
-
-        // 留言功能
-        function initMessages() {
-            const messageInput = document.getElementById('messageInput');
-            const submitMessage = document.getElementById('submitMessage');
-            const messagesContainer = document.getElementById('messagesContainer');
-            
-            // 加载留言
-            function loadMessages() {
-                const messages = JSON.parse(localStorage.getItem('exhibitionMessages') || '[]');
-                messagesContainer.innerHTML = messages.map((msg, index) => `
-                    <div class="message-card p-4 rounded-xl">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-yellow-600 font-semibold">访客</span>
-                            <span class="text-white/40 text-xs">${msg.date}</span>
-                        </div>
-                        <p class="text-white/80 text-sm">${msg.content}</p>
-                    </div>
-                `).join('');
-            }
-            
-            // 提交留言
-            submitMessage.addEventListener('click', () => {
-                const content = messageInput.value.trim();
-                if (!content) return;
-                
-                const messages = JSON.parse(localStorage.getItem('exhibitionMessages') || '[]');
-                messages.unshift({
-                    content: content,
-                    date: new Date().toLocaleString('zh-CN')
-                });
-                localStorage.setItem('exhibitionMessages', JSON.stringify(messages));
-                
-                messageInput.value = '';
-                loadMessages();
-            });
-            
-            loadMessages();
         }
 
         // 生成二维码
@@ -1372,32 +1258,34 @@
             qrcodeContainer.innerHTML = '';
             new QRCode(qrcodeContainer, {
                 text: window.location.href,
-                width: 100,
-                height: 100,
+                width: 80,
+                height: 80,
                 colorDark: '#000000',
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.H
             });
         }
 
+        // 显示微信二维码提示
+        function showWechatQR() {
+            alert('请添加微信：art-exhibition-2026');
+        }
+
+        // ESC关闭模态框
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
             loadArtworks();
-            initCustomCursor();
             createParticles();
             initScrollAnimations();
             initBackToTop();
             initMobileMenu();
-            initSearch();
-            initMessages();
             initQRCode();
-        });
-
-        // ESC关闭模态框
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
+            toggleAccordion('ex1-content');
         });
     </script>
 </body>
